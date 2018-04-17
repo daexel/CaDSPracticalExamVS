@@ -27,7 +27,7 @@ public class Surface implements IIDLCaDSEV3RMIMoveGripper, IIDLCaDSEV3RMIMoveHor
 		IIDLCaDSEV3RMIUltraSonic, ICaDSRMIConsumer {
 
 	static CaDSRobotGUISwing gui; // die Gui, auf welcher wir den arm bewegen können.
-	private int currentRoboter = 0;
+	private int currentRoboters = 0;
 	private int tid = 0;		// transaction id
 	private static ControllServer server;
 
@@ -50,7 +50,7 @@ public class Surface implements IIDLCaDSEV3RMIMoveGripper, IIDLCaDSEV3RMIMoveHor
 		System.out.println("Aktueller Roboter = " + arg0);
 		arg0 = arg0.replaceAll("[a-z]|[A-Z]", "");
 		arg0 = arg0.replaceAll("\\s", "");
-		currentRoboter = Integer.parseInt(arg0);
+		currentRoboters = Integer.parseInt(arg0);
 
 	}
 
