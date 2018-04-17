@@ -6,6 +6,14 @@ import java.net.SocketException;
 import java.util.HashMap;
 import java.util.InputMismatchException;
 import java.util.LinkedList;
+import java.util.Observer;
+import java.util.concurrent.Flow.Publisher;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
+import javafx.beans.InvalidationListener;
+import javafx.beans.Observable;
 
 /**
  * ControlLServer
@@ -21,7 +29,7 @@ public class ControllServer {
 	private int serverPort;
 	private HashMap<Integer, ServiceContainer[]> roboMap;
 	private LinkedList<Order> orderList = new LinkedList<Order>();
-	Runnable sendThread = () -> sendOrder();
+	private boolean senderIsRunning = true;
 
 	/*
 	 * ServiceContainer is build like this: serviceContainer[0] = vertical
@@ -37,7 +45,7 @@ public class ControllServer {
 			e.printStackTrace();
 		}
 		System.out.println("ControllServer: waiting for some magic....");
-
+		sender.start();
 	}
 
 	/**
@@ -46,16 +54,15 @@ public class ControllServer {
 	 * Closes the ServerSocket.
 	 */
 	public void close() {
+		senderIsRunning = false;
+		synchronized (this) {
+			notify();
+		}
 		try {
 			serverSocket.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-	}
-
-	public static void main(String[] args) {
-		ControllServer server = new ControllServer(1337);
-		server.close();
 	}
 
 	/**
@@ -90,23 +97,85 @@ public class ControllServer {
 			}
 		}
 	}
-	
-	public void pushOrder() {
-		
+
+	/**
+	 * pushOrder
+	 * 
+	 * Adds a further order to the list of orders, which have to be send by the Send
+	 * Thread.
+	 * 
+	 * @param order
+	 *            to send asap.
+	 */
+	public void pushOrder(Order order) {
+		orderList.add(order);
+		System.out.println("notifyed");
+		synchronized (this) {
+			notify();
+		}
 	}
-	public void sendOrder() {
-		while(true) {
-			if(orderList.isEmpty()) {
-				try {
-					sendThread.wait();
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+
+	private void sendOrder() {
+		while (senderIsRunning) {
+			synchronized (this) {
+				if (orderList.size() == 0) {
+					try {
+						wait();
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+					continue;
 				}
-			}else {
-				Order orerToSend = orderList.getFirst();
+				// to retrive the ifrst job in the list
+				Order val = orderList.removeFirst();
+
+				/**
+				 * Sending order
+				 */
+
+				System.out.println("Consumer consumed-" + val);
+
+				// Wake up producer thread
+
 			}
 		}
-		
+	}
+
+	/**
+	 * SENDER
+	 */
+	public Thread sender = new Thread(new Runnable() {
+
+		@Override
+		public void run() {
+			System.out.println("Sender: started..");
+			sendOrder();
+		}
+
+	});
+
+	/**
+	 * READER
+	 */
+	public static class Reader implements Runnable {
+
+		@Override
+		public void run() {
+			// TODO Auto-generated method stub
+
+		}
+
+	}
+
+	public static void main(String[] args) {
+		ControllServer server = new ControllServer(1337);
+		int i = 0;
+		while (i < 10) {
+			i++;
+			System.out.println(i);
+			server.pushOrder(new Order(0, 0, Service.GRABBER, true));
+
+		}
+		server.close();
 	}
 }
