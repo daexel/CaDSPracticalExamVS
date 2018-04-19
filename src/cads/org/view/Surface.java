@@ -33,7 +33,6 @@ public class Surface implements IIDLCaDSEV3RMIMoveGripper, IIDLCaDSEV3RMIMoveHor
 
 	public static void main(String[] args) {
 		Surface surface = new Surface();
-	
 		SwingUtilities.invokeLater(new SwingGUI(surface));
 
 	}
@@ -80,25 +79,24 @@ public class Surface implements IIDLCaDSEV3RMIMoveGripper, IIDLCaDSEV3RMIMoveHor
 
 	@Override
 	public int moveHorizontalToPercent(int arg0, int arg1) throws Exception {
-		// TODO Auto-generated method stub
+		System.out.println("Robot movedHorizontal"+arg0+" "+arg1);	
 		return 0;
 	}
 
 	@Override
 	public int stop(int arg0) throws Exception {
-		// TODO Auto-generated method stub
+		System.out.println("Robot closed");		
 		return 0;
 	}
 
 	@Override
 	public int closeGripper(int arg0) throws Exception {
-		// TODO Auto-generated method stub
+		System.out.println("Gripper closed");
 		return 0;
 	}
 
 	@Override
 	public int isGripperClosed() throws Exception {
-		System.out.println("Gripper closed");
 		return 0;
 	}
 
@@ -142,7 +140,7 @@ public class Surface implements IIDLCaDSEV3RMIMoveGripper, IIDLCaDSEV3RMIMoveHor
 		@Override
 		public void run() {
 			try {
-				server = new ControllServer(1337);
+				//server = new ControllServer(1337);
 				gui = new CaDSRobotGUISwing(c, c, c, c, c);
 				gui.addService("Roboter 1");
 				gui.addService("Roboter 2");

@@ -1,5 +1,7 @@
 package cads.org.controller;
 
+import java.io.IOException;
+import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
@@ -7,13 +9,9 @@ import java.util.HashMap;
 import java.util.InputMismatchException;
 import java.util.LinkedList;
 import java.util.Observer;
-import java.util.concurrent.Flow.Publisher;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
-import javafx.beans.InvalidationListener;
-import javafx.beans.Observable;
+
+
 
 /**
  * ControlLServer
@@ -23,7 +21,7 @@ import javafx.beans.Observable;
  * @author BlackDynamite
  *
  */
-public class ControllServer {
+public class ControllServer implements Runnable{
 	static int serviceContainerArraySize = Service.values().length;
 	private DatagramSocket serverSocket;
 	private int serverPort;
@@ -45,7 +43,7 @@ public class ControllServer {
 			e.printStackTrace();
 		}
 		System.out.println("ControllServer: waiting for some magic....");
-		sender.start();
+		//sender.start();
 	}
 
 	/**
@@ -144,15 +142,45 @@ public class ControllServer {
 	/**
 	 * SENDER
 	 */
-	public Thread sender = new Thread(new Runnable() {
 
-		@Override
-		public void run() {
-			System.out.println("Sender: started..");
-			sendOrder();
+	@Override
+	public void run() {
+		//byte[] data = new byte[ 1024 ];
+		
+		//DatagramPacket packet = new DatagramPacket( data, data.length );
+		try {
+			while ( true )
+		    {
+			System.out.println("Warte auf eine Nachricht................");
+			DatagramPacket packet = new DatagramPacket( new byte[1024], 1024 );
+			serverSocket.receive( packet );
+			System.out.println("Empfänger wird ausgelesen................");
+			  // Empfänger auslesen
+			
+			  InetAddress address = packet.getAddress();
+			  int         port    = packet.getPort();
+			  int         len     = packet.getLength();
+			  byte[]      daten    = packet.getData();
+			
+			  System.out.printf( "Anfrage von %s vom Port %d mit der Länge %d:%n%s%n",
+			                 address, port, len, new String( daten, 0, len ) );
+		    }
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-
-	});
+		
+	}
+//	public Thread sender = new Thread(new Runnable() {
+//
+//		@Override
+//		public void run() {
+//			
+//			System.out.println("Sender: started..");
+//			sendOrder();
+//		}
+//
+//	});
 
 	/**
 	 * READER
@@ -168,14 +196,16 @@ public class ControllServer {
 	}
 
 	public static void main(String[] args) {
-		ControllServer server = new ControllServer(1337);
-		int i = 0;
-		while (i < 10) {
-			i++;
-			System.out.println(i);
-			server.pushOrder(new Order(0, 0, Service.GRABBER, true));
-
-		}
+		ControllServer server = new ControllServer(1333);
+		server.run();
+//		int i = 0;
+//		while (i < 10) {
+//			i++;
+//			System.out.println(i);
+//			server.pushOrder(new Order(0, 0, Service.GRABBER, true));
+//
+//		}
 		server.close();
 	}
+
 }
