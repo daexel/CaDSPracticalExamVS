@@ -1,5 +1,4 @@
 package cads.parser.generated;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -11,24 +10,29 @@ import java.net.ServerSocket;
 
 /**
  * Serviceklasse die die jeweiligen Bewegungsarten mit Sockets abbildet.
+ * Wenn ich eine Order mit einer Message erstellte, möchte ich erstmal senden. 
+ * 
+ * Bisher empfängt die ServiceKlasse nur.....................
+ * 
+ * 
  */
-public class Service extends Thread {
+public class Service implements Runnable {
 	private Socket socket;
 	private ServerSocket serverSocket;
 	private int clientNumber;
-	private ServiceType type;
+	private Service type;
 	private Message message;
 
-	public Service(ServiceType type, int port, int clientNumber) throws UnknownHostException, IOException {
+	public Service(Service type, int port, int clientNumber) throws UnknownHostException, IOException {
 		this.serverSocket = new ServerSocket(port);
 		log("New ServerSocket");
-		//serverSocket.setSoTimeout(8000);
-		//this.socket = serverSocket.accept();
+		serverSocket.setSoTimeout(8000);
+		this.socket = serverSocket.accept();
 		this.type = type;
 		this.clientNumber = clientNumber;
 		log("New connection with client# " + clientNumber + " at " + socket);
 	}
-
+	@Override
 	public void run() {
 		try {
 
@@ -37,7 +41,6 @@ public class Service extends Thread {
 			// after every newline.
 			ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
 			message = (Message) ois.readObject();
-			System.out.println(message.getType().toString());
 			ois.close();
 		}
 		// Send a welcome message to the client.
@@ -87,13 +90,6 @@ public class Service extends Thread {
 		this.clientNumber = clientNumber;
 	}
 
-	public ServiceType getType() {
-		return type;
-	}
-
-	public void setType(ServiceType type) {
-		this.type = type;
-	}
 
 	public void setMessage(Message message) {
 		this.message = message;
