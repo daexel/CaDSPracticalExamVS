@@ -11,6 +11,7 @@ import java.util.InputMismatchException;
 import java.util.LinkedList;
 import java.util.Observer;
 
+import cads.org.Middleware.ServiceContainer;
 import cads.org.client.Order;
 import cads.org.client.Service;
 
@@ -162,15 +163,15 @@ public class ServerController implements Runnable{
 			System.out.println("Warte auf eine Nachricht................");
 			DatagramPacket packet = new DatagramPacket( new byte[1024], 1024 );
 			serverSocket.receive( packet );
-			System.out.println("Empfänger wird ausgelesen................");
-			  // Empfänger auslesen
+			System.out.println("Empfï¿½nger wird ausgelesen................");
+			  // Empfï¿½nger auslesen
 			
 			  InetAddress address = packet.getAddress();
 			  int         port    = packet.getPort();
 			  int         len     = packet.getLength();
 			  byte[]      daten    = packet.getData();
 			
-			  System.out.printf( "Anfrage von %s vom Port %d mit der Länge %d:%n%s%n",
+			  System.out.printf( "Anfrage von %s vom Port %d mit der Lï¿½nge %d:%n%s%n",
 			                 address, port, len, new String( daten, 0, len ) );
 		    }
 		} catch (IOException e) {

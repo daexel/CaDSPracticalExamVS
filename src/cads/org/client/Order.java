@@ -180,6 +180,10 @@ public class Order {
 	public byte[] getSize() {
 		return this.getSize();
 	}
+	
+	public int getRoboterID() {
+		return this.roboter;
+	}
 
 	@Override
 	public String toString() {
