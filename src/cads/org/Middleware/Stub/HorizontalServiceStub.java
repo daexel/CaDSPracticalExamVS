@@ -1,4 +1,4 @@
-package cads.org.Middleware;
+package cads.org.Middleware.Stub;
 
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -7,7 +7,7 @@ import java.net.SocketException;
 
 import cads.org.client.Order;
 
-public class HorizontalServiceStub implements RoboterService{
+public class HorizontalServiceStub implements cads.org.Middleware.RoboterService{
 
 	private DatagramSocket serverSocket;
 	private static int port = 1338;

@@ -1,5 +1,8 @@
 package cads.org.Middleware;
 
+import cads.org.Middleware.Stub.EstopServiceStub;
+import cads.org.Middleware.Stub.GrabberServiceStub;
+import cads.org.Middleware.Stub.HorizontalServiceStub;
 import cads.org.client.Service;
 
 public class RoboterFactory {
@@ -8,7 +11,7 @@ public class RoboterFactory {
 			if (serviceType == Service.GRABBER) {
 				return new GrabberServiceStub();
 			} else if (serviceType == Service.VERTICAL) {
-				return new VerticalServiceStub();
+				return new cads.org.Middleware.Stub.VerticalServiceStub();
 			} else if (serviceType == Service.HORIZONTAL) {
 				return new HorizontalServiceStub();
 			} else if (serviceType == Service.ESTOP) {

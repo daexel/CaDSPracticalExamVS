@@ -1,4 +1,4 @@
-package cads.org.Middleware;
+package cads.org.Middleware.Stub;
 
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -7,10 +7,10 @@ import java.net.SocketException;
 
 import cads.org.client.Order;
 
-public class GrabberServiceStub implements RoboterService{
+public class VerticalServiceStub implements cads.org.Middleware.RoboterService {
 
 	private DatagramSocket serverSocket;
-	private static int port = 1339;
+	private static int port = 1337;
 
 	@Override
 	public void move(Order order) {
@@ -30,7 +30,7 @@ public class GrabberServiceStub implements RoboterService{
 
 	}
 
-	public GrabberServiceStub() {
+	public VerticalServiceStub() {
 		try {
 			serverSocket = new DatagramSocket();
 		} catch (SocketException e) {
@@ -38,5 +38,5 @@ public class GrabberServiceStub implements RoboterService{
 			e.printStackTrace();
 		}
 	}
-	
+
 }
