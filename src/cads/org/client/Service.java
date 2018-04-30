@@ -11,12 +11,7 @@ package cads.org.client;
  */
 public enum Service {
 	VERTICAL, HORIZONTAL, GRABBER, ESTOP;
-<<<<<<< HEAD
-	
-	
-=======
 
->>>>>>> ef568c08428f4f27c5856b99590919914bd726e1
 	/**
 	 * parseService
 	 * 

@@ -9,6 +9,12 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import cads.org.Middleware.RoboterFactory;
+import cads.org.Server.RobotEstopService;
+import cads.org.Server.RobotGrapperService;
+import cads.org.Server.RobotHorizontalService;
+import cads.org.Server.RobotVerticalService;
+
 
 /**
  * @author daexel
@@ -23,7 +29,7 @@ public class ClientController implements Runnable {
 	private  ConcurrentLinkedQueue<Feedback> feedbackQueue;
 	private Order order=null;
 	private Feedback feedback;
-	// Stub stub;
+
 
 
 
@@ -42,30 +48,18 @@ public class ClientController implements Runnable {
 	}
 	
 	/**
-	 * 
 	 * @param order
 	 * 
-	 * gibt die Order an den Stub weiter
+	 * Gibt die Order an den Stub weiter.
 	 */
 	public void sendOrder(Order order) {
-//		try {
-			System.out.println("Packet wurde versendet!!!!");
-			
-			
-			
-			//buffer = Order.parseOrder(order);
-			//packet = new DatagramPacket(buffer, buffer.length, serverAdress, port);
-			//clientSocket.send( packet );
-//		} catch (UnsupportedEncodingException e1) {
-//			// TODO Auto-generated catch block
-//			e1.printStackTrace();
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-
-		
+		RoboterFactory.getService(order.getService()).move(order);
+					
 	}
+	/**
+	 * Thread to receive Messages
+	 * 
+	 */
 	
 	public Thread receivingThread = new Thread(new Runnable() {
 
@@ -77,9 +71,10 @@ public class ClientController implements Runnable {
 				//Falls der Thread nicht warten kann
 				e.printStackTrace();
 			}
-			feedbackQueue.add(reveiveFeedback());
-			updateThread.notify();
-			feedback = reveiveFeedback();			
+			
+			//feedbackQueue.add(reveiveFeedback());
+			//updateThread.notify();
+			//feedback = reveiveFeedback();			
 			
 		}
 		

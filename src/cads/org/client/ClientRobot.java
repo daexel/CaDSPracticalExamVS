@@ -9,7 +9,7 @@ package cads.org.client;
  * Diese Klasse dient als Wrapper um die atomren Dienste der Middleware zu einem Roboter zusammenzusetzen
  *
  */
-public class Roboter {
+public class ClientRobot {
 	
 	
 

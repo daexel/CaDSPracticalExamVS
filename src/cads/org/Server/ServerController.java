@@ -11,9 +11,10 @@ import java.util.InputMismatchException;
 import java.util.LinkedList;
 import java.util.Observer;
 
-import cads.org.Middleware.ServiceContainer;
 import cads.org.client.Order;
 import cads.org.client.Service;
+import cads.org.Middleware.RoboterFactory;
+import cads.org.Middleware.RoboterService;
 
 
 
@@ -28,14 +29,15 @@ import cads.org.client.Service;
  *
  *
  */
-public class ServerController implements Runnable{
+public class ServerController implements Runnable, RoboterService{
+	
 	
 	static int serviceContainerArraySize = Service.values().length;
 	private DatagramSocket serverSocket;
 	private int serverPort;
-	private HashMap<Integer, ServiceContainer[]> roboMap;
 	private LinkedList<Order> orderList = new LinkedList<Order>();
 	private boolean senderIsRunning = true;
+	
 	
 
 	/*
@@ -43,7 +45,6 @@ public class ServerController implements Runnable{
 	 * serviceContainer[1] = horizontal serviceContainer[2] = grabber
 	 */
 	public ServerController(int serverPort) {
-		roboMap = new HashMap<Integer, ServiceContainer[]>();
 		this.serverPort = serverPort;
 		try {
 			serverSocket = new DatagramSocket(serverPort);
@@ -215,6 +216,12 @@ public class ServerController implements Runnable{
 //
 //		}
 		server.close();
+	}
+
+	@Override
+	public void move(Order order) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }
