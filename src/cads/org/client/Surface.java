@@ -39,7 +39,7 @@ public class Surface implements IIDLCaDSEV3RMIMoveGripper, IIDLCaDSEV3RMIMoveHor
 	private Service service = null;
 	private ConcurrentLinkedQueue<Order> queue = new ConcurrentLinkedQueue<Order>();
 
-	private Order[] orders;
+	private Order[] sendOrders;
 
 
 	public Surface() {
@@ -48,7 +48,7 @@ public class Surface implements IIDLCaDSEV3RMIMoveGripper, IIDLCaDSEV3RMIMoveHor
 	}
 	
 	public Order[] getOrders() {
-		return this.orders;
+		return this.sendOrders;
 	}
 
 		
@@ -91,18 +91,16 @@ public class Surface implements IIDLCaDSEV3RMIMoveGripper, IIDLCaDSEV3RMIMoveHor
 
 	@Override
 	public int getCurrentVerticalPercent() throws Exception {
-		//Observer pattern????
-		gui.setVerticalProgressbar(10);		// TODO Auto-generated method stub
-		// Wie bekomme ich die Aktuelle position??
-		
+			// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
 	public int moveVerticalToPercent(int arg0, int arg1) throws Exception {
 		this.order = new Order(arg0,currentRoboters,Service.VERTICAL,arg1);
-		queue.add(order);
+		this.queue.add(order);
 		System.out.println("Robot moved Vertical "+arg0+"  "+arg1);
+		gui.setVerticalProgressbar(arg1);
 		return 0;
 	}
 
@@ -117,6 +115,7 @@ public class Surface implements IIDLCaDSEV3RMIMoveGripper, IIDLCaDSEV3RMIMoveHor
 		order = new Order(arg0,currentRoboters,Service.HORIZONTAL,arg1);
 		System.out.println("Robot moved Horizontal"+arg0+" "+arg1);	
 		this.queue.add(order);
+		gui.setHorizontalProgressbar(arg1);
 		return 0;
 	}
 
@@ -128,7 +127,8 @@ public class Surface implements IIDLCaDSEV3RMIMoveGripper, IIDLCaDSEV3RMIMoveHor
 
 	@Override
 	public int closeGripper(int arg0) throws Exception, IOException {
-		order = new Order(arg0, currentRoboters,service, false);
+		order = new Order(arg0, currentRoboters,service.GRABBER, false);
+		this.queue.add(order);
 		System.out.println("Gripper closed");
 		return 0;
 	}
@@ -140,7 +140,8 @@ public class Surface implements IIDLCaDSEV3RMIMoveGripper, IIDLCaDSEV3RMIMoveHor
 
 	@Override
 	public int openGripper(int arg0) throws Exception {
-		order = new Order(arg0, currentRoboters,service, true);
+		order = new Order(arg0, currentRoboters,service.GRABBER, true);
+		this.queue.add(order);
 		System.out.println("Gripper opened");
 		return 0;
 	}

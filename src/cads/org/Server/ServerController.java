@@ -1,5 +1,6 @@
 package cads.org.Server;
 
+
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -17,26 +18,30 @@ import cads.org.client.Service;
 
 
 /**
- * ControlLServer
+ * ServerController
  * 
- * Receivs Orders from the Surface and sends them to the needed service
+ * Receives Orders from the Skeleton/Middleware and send the request
  * 
- * @author BlackDynamite
+ * @author Michel Gerlach
+ *
+ *
  *
  */
-public class ControllServer implements Runnable{
+public class ServerController implements Runnable{
+	
 	static int serviceContainerArraySize = Service.values().length;
 	private DatagramSocket serverSocket;
 	private int serverPort;
 	private HashMap<Integer, ServiceContainer[]> roboMap;
 	private LinkedList<Order> orderList = new LinkedList<Order>();
 	private boolean senderIsRunning = true;
+	
 
 	/*
 	 * ServiceContainer is build like this: serviceContainer[0] = vertical
 	 * serviceContainer[1] = horizontal serviceContainer[2] = grabber
 	 */
-	public ControllServer(int serverPort) {
+	public ServerController(int serverPort) {
 		roboMap = new HashMap<Integer, ServiceContainer[]>();
 		this.serverPort = serverPort;
 		try {
@@ -199,7 +204,7 @@ public class ControllServer implements Runnable{
 	}
 
 	public static void main(String[] args) {
-		ControllServer server = new ControllServer(1330);
+		ServerController server = new ServerController(1330);
 		server.run();
 //		int i = 0;
 //		while (i < 10) {

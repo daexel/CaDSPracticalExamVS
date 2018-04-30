@@ -27,7 +27,6 @@ public class Rob_Test implements Runnable, ICaDSEV3RobotStatusListener, ICaDSEV3
         @Override
         public synchronized void onStatusMessage(JSONObject status) {
             System.out.println(status);
-
         }
 
         @Override

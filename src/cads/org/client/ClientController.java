@@ -4,12 +4,10 @@
 package cads.org.client;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.SocketException;
-import java.net.UnknownHostException;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 
 /**
@@ -21,28 +19,13 @@ import java.net.UnknownHostException;
  *
  */
 public class ClientController implements Runnable {
-	Surface surface;
+	private Surface surface;
+	private  ConcurrentLinkedQueue<Feedback> feedbackQueue;
+	private Order order=null;
+	private Feedback feedback;
 	// Stub stub;
-	InetAddress serverAdress;
-	int port;
-	DatagramSocket clientSocket;
-	DatagramPacket packet;
-	byte [] buffer = new byte[1024];
 
-	
-	private int currentRoboters = 0;
-	private int tid = 0;		// transaction id
 
-	Order order=null;
-
-	
-//	public ClientController(String adress, int port) throws UnknownHostException, SocketException{
-//		this.serverAdress=InetAddress.getByName(adress);
-//		this.port=port;
-//		this.clientSocket = new DatagramSocket();
-//		
-//	}
-//	
 
 	public void addSurface(Surface surface) {
 		this.surface=surface;
@@ -50,23 +33,19 @@ public class ClientController implements Runnable {
 	}
 	
 	@Override
-	public void run() {
-		   
-        // Create a packet with server information
-		while(true) {
-			//System.out.println("Haenge in der while!!!");
-			
+	public void run() {      
+		while(true) {			
 			if(!surface.getQueue().isEmpty()) {
 				sendOrder(surface.getQueue().poll());
 			}
 		}
-       
-		
 	}
 	
 	/**
 	 * 
 	 * @param order
+	 * 
+	 * gibt die Order an den Stub weiter
 	 */
 	public void sendOrder(Order order) {
 //		try {
@@ -85,6 +64,55 @@ public class ClientController implements Runnable {
 //			e.printStackTrace();
 //		}
 
+		
+	}
+	
+	public Thread receivingThread = new Thread(new Runnable() {
+
+		@Override
+		public void run() {
+			try {
+				wait();
+			} catch (InterruptedException e) {
+				//Falls der Thread nicht warten kann
+				e.printStackTrace();
+			}
+			feedbackQueue.add(reveiveFeedback());
+			updateThread.notify();
+			feedback = reveiveFeedback();			
+			
+		}
+		
+	});
+	
+	public Thread updateThread = new Thread(new Runnable() {
+
+		@Override
+		public void run() {
+			try {
+				this.wait();
+			} catch (InterruptedException e) {
+				//Falls der Thread nicht warten kann
+				e.printStackTrace();
+			}
+			feedback = feedbackQueue.poll();
+			if(feedback.getService()==Service.HORIZONTAL) {
+				surface.gui.setHorizontalProgressbar(feedback.getValueOfMovement());
+			}
+			if(feedback.getService()==Service.VERTICAL) {
+				surface.gui.setVerticalProgressbar(feedback.getValueOfMovement());
+			}
+			if(feedback.getService()==Service.GRABBER) {
+				System.out.println("Grapper Feedback erhalten");
+			}
+			
+		}
+		
+	});
+	
+	
+	
+	public void reveiveFeedback() {
 		
 	}
 	/**

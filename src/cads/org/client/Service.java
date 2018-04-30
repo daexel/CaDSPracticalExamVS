@@ -8,7 +8,7 @@ package cads.org.client;
  *
  */
 public enum Service {
-	VERTICAL, HORIZONTAL, GRABBER;
+	VERTICAL, HORIZONTAL, GRABBER, ESTOP;
 	
 	
 	/**
