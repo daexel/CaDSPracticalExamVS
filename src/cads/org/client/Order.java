@@ -177,7 +177,7 @@ public class Order {
 	public void setOpen(boolean isOpen) {
 		this.isOpen = isOpen;
 	}
-	public byte[] getSize() {
+	public int getSize() {
 		return this.getSize();
 	}
 	

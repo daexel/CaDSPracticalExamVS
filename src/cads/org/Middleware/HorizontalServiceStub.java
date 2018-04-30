@@ -7,10 +7,10 @@ import java.net.SocketException;
 
 import cads.org.client.Order;
 
-public class GrabberService implements RoboterService{
+public class HorizontalServiceStub implements RoboterService{
 
 	private DatagramSocket serverSocket;
-	private static int port = 1339;
+	private static int port = 1338;
 
 	@Override
 	public void move(Order order) {
@@ -30,7 +30,7 @@ public class GrabberService implements RoboterService{
 
 	}
 
-	public GrabberService() {
+	public HorizontalServiceStub() {
 		try {
 			serverSocket = new DatagramSocket();
 		} catch (SocketException e) {
@@ -38,5 +38,5 @@ public class GrabberService implements RoboterService{
 			e.printStackTrace();
 		}
 	}
-	
+
 }
