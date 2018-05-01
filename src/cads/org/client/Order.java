@@ -28,50 +28,22 @@ public class Order {
 	/**
 	 * Order
 	 * 
-	 * For creating a grab order
-	 * 
-	 * @param tid
-	 * @param roboter
-	 * @param service
-	 * @param isOpen
-	 * @throws WrongMethodTypeException
-	 */
-	
-	public Order(int tid, int roboter, Service service, boolean isOpen) throws WrongMethodTypeException {
-		if (service != Service.GRABBER) {
-			throw new WrongMethodTypeException("Use different constructor for movement order.");
-		}
-		this.tid = tid;
-		this.roboter = roboter;
-		this.service = service;
-		this.isOpen = isOpen;
-		this.valueOfMovement = 0;
-
-	}
-	
-
-	/**
-	 * Order
-	 * 
 	 * For creating a movement order
 	 * 
 	 * @param tid
 	 * @param roboter
 	 * @param service
 	 * @param valueOfMovement
-	 * @throws WrongMethodTypeException
+	 * @param isOpen 
 	 */
-	public Order(int tid, int roboter, Service service, int valueOfMovement) throws WrongMethodTypeException {
-		if (service != Service.VERTICAL & service != Service.HORIZONTAL) {
-			throw new WrongMethodTypeException("Use different constructor for movement order.");
-		}
+	public Order(int tid, int roboter, Service service, int valueOfMovement, boolean isOpen) {
+
 		this.tid = tid;
 		this.roboter = roboter;
 		this.service = service;
 		this.valueOfMovement = valueOfMovement;
-		this.isOpen = false;
+		this.isOpen = isOpen;
 	}
-
 
 	/**
 	 * parseOrder
@@ -177,10 +149,11 @@ public class Order {
 	public void setOpen(boolean isOpen) {
 		this.isOpen = isOpen;
 	}
+
 	public int getSize() {
 		return this.getSize();
 	}
-	
+
 	public int getRoboterID() {
 		return this.roboter;
 	}
