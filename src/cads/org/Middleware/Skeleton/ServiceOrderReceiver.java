@@ -1,4 +1,4 @@
-package cads.org.Middleware;
+package cads.org.Middleware.Skeleton;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -28,7 +28,7 @@ public abstract class ServiceOrderReceiver {
 
 		@Override
 		public void run() {
-			Order order = new Order(0, 0, Service.ESTOP, 0); // dummy
+			Order order = new Order(0, 0, Service.ESTOP, 0, false); // dummy
 			int bufLength = Order.parseOrder(order).length;
 			byte[] buf = new byte[bufLength];
 			DatagramPacket r = new DatagramPacket(buf, bufLength);

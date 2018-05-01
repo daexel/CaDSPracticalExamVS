@@ -57,8 +57,11 @@ public class Order {
 	static public byte[] parseOrder(Order order) {
 		JSONObject jasonOrder = new JSONObject();
 		jasonOrder.put("TID", order.getTid());
+		jasonOrder.put("RobotNumber",order.getRoboterID());
 		jasonOrder.put("Service", order.getService().ordinal());
 		jasonOrder.put("Value", order.getValueOfMovement());
+		jasonOrder.put("Grapperbool", order.getIsOpen());
+		
 
 		System.out.println("Parser: created:" + jasonOrder.toJSONString());
 
@@ -83,6 +86,7 @@ public class Order {
 	 * @return order
 	 */
 	static public Order parseReceivedMessage(byte[] buffer) {
+		Service serviceReceived = null;
 		Order receivedOrder = null;
 		String bufferedString = null;
 		try {
@@ -104,15 +108,24 @@ public class Order {
 		System.out.println("JSON: " + json.toString());
 		System.out.println("Parser: incoming length: " + buffer.length);
 		System.out.println(json.get("Service").getClass().toString());
-
-		if ((long) json.get("Service") == Service.GRABBER.ordinal()) {
-			receivedOrder = new Order(Integer.parseInt(json.get("TID").toString()), 0, Service.GRABBER,
-					Boolean.parseBoolean(json.get("Value").toString()));
-		} else if ((long) json.get("Service") == (Service.HORIZONTAL.ordinal())
-				| (long) json.get("Service") == (Service.VERTICAL.ordinal())) {
-			receivedOrder = new Order(Integer.parseInt(json.get("TID").toString()), 0,
-					Service.values()[(int) (long) json.get("Service")], Integer.parseInt(json.get("Value").toString()));
+		
+		if((long) json.get("Service") == (Service.HORIZONTAL.ordinal())){
+			serviceReceived = Service.HORIZONTAL;
 		}
+		if ((long) json.get("Service") == Service.GRABBER.ordinal()) {
+			serviceReceived = Service.GRABBER;
+		}
+		if ((long) json.get("Service") == Service.VERTICAL.ordinal()) {
+			serviceReceived = Service.VERTICAL;
+		}
+		if ((long) json.get("Service") == Service.ESTOP.ordinal()) {
+			serviceReceived = Service.ESTOP;
+		}
+			receivedOrder = new Order(Integer.parseInt(json.get("TID").toString()), 
+					Integer.parseInt(json.get("RobotNumber").toString()), 
+					serviceReceived,
+					Integer.parseInt(json.get("Value").toString()),
+					Boolean.parseBoolean(json.get("Grapperbool").toString()));
 		System.out.println(receivedOrder.toString());
 
 		return receivedOrder;
@@ -142,11 +155,11 @@ public class Order {
 		this.valueOfMovement = valueOfMovement;
 	}
 
-	public boolean isOpen() {
+	public boolean getIsOpen() {
 		return isOpen;
 	}
 
-	public void setOpen(boolean isOpen) {
+	public void setIsOpen(boolean isOpen) {
 		this.isOpen = isOpen;
 	}
 

@@ -1,4 +1,4 @@
-package cads.org.Middleware;
+package cads.org.Middleware.Skeleton;
 
 import cads.org.client.Order;
 import cads.org.client.Service;

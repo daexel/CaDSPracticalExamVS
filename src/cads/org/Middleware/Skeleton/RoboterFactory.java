@@ -1,4 +1,4 @@
-package cads.org.Middleware;
+package cads.org.Middleware.Skeleton;
 
 import cads.org.Middleware.Stub.EstopServiceStub;
 import cads.org.Middleware.Stub.GrabberServiceStub;
