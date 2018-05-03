@@ -7,7 +7,7 @@ import java.net.SocketException;
 
 import cads.org.client.Order;
 
-public class VerticalServiceStub implements cads.org.Middleware.RoboterService {
+public class VerticalServiceStub implements cads.org.Middleware.Skeleton.RoboterService {
 
 	private DatagramSocket serverSocket;
 	private static int port = 1337;

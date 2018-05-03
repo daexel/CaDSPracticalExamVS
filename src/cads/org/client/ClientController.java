@@ -9,11 +9,12 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import cads.org.Middleware.RoboterFactory;
-import cads.org.Server.RobotEstopService;
-import cads.org.Server.RobotGrapperService;
-import cads.org.Server.RobotHorizontalService;
-import cads.org.Server.RobotVerticalService;
+import cads.org.Middleware.Skeleton.ResponsibiltySide;
+import cads.org.Middleware.Skeleton.RoboterFactory;
+import cads.org.Server.EstopServiceServer;
+import cads.org.Server.GrapperServiceServer;
+import cads.org.Server.HorizontalServiceServer;
+import cads.org.Server.VerticalServiceServer;
 
 
 /**
@@ -53,7 +54,7 @@ public class ClientController implements Runnable {
 	 * Gibt die Order an den Stub weiter.
 	 */
 	public void sendOrder(Order order) {
-		RoboterFactory.getService(order.getService()).move(order);
+		RoboterFactory.getService(order.getService(),ResponsibiltySide.CLIENT).move(order);
 					
 	}
 	/**

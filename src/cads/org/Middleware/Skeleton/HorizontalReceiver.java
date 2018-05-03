@@ -1,5 +1,6 @@
 package cads.org.Middleware.Skeleton;
 
+import cads.org.Server.HalFactory;
 import cads.org.client.Order;
 import cads.org.client.Service;
 
@@ -12,7 +13,10 @@ public class HorizontalReceiver extends ServiceOrderReceiver {
 
 	@Override
 	public void useService(Order order) {
-		//RoboterFactory.getService(Service.HORIZONTAL, ResponsibiltySide.SERVER).move(order);
+
+		RoboterFactory.getService(Service.HORIZONTAL, ResponsibiltySide.SERVER).move(order);
+		HalFactory.getHal(Service.HORIZONTAL).executeOrder(order);
+
 	}
 
 }
