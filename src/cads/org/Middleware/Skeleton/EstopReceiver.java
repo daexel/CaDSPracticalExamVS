@@ -1,4 +1,4 @@
-package cads.org.Middleware;
+package cads.org.Middleware.Skeleton;
 
 import cads.org.client.Order;
 import cads.org.client.Service;
@@ -12,8 +12,8 @@ public class EstopReceiver extends ServiceOrderReceiver {
 
 	@Override
 	public void useService(Order order) {
-		System.out.println(order.toString());
-		RoboterFactory.getService(Service.ESTOP, ResponsibiltySide.SERVER).move(order);
+		//System.out.println(order.toString());
+		//RoboterFactory.getService(Service.ESTOP, ResponsibiltySide.SERVER).move(order);
 	}
 
 }

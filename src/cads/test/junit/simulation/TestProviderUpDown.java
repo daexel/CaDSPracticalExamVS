@@ -11,9 +11,9 @@ import org.junit.Test;
 
 import lejos.utility.Delay;
 
-
 public class TestProviderUpDown {
 	private static CaDSEV3RobotHAL caller = null;
+
 	private class TestListener implements Runnable, ICaDSEV3RobotStatusListener, ICaDSEV3RobotFeedBackListener {
 
 		@Override
@@ -32,13 +32,14 @@ public class TestProviderUpDown {
 			try {
 				caller = CaDSEV3RobotHAL.createInstance(CaDSEV3RobotType.SIMULATION, this, this);
 				boolean on = true;
-				while(!Thread.currentThread().isInterrupted()){
+				while (!Thread.currentThread().isInterrupted()) {
 
-					if(on){
-						caller.stop_v();	// stops any movement
+					if (on) {
+						caller.stop_v(); // stops any movement
+
 						caller.moveDown();
-					}else{
-						caller.stop_v();	// stops any movement
+					} else {
+						caller.stop_v(); // stops any movement
 						caller.moveUp();
 					}
 					on = !on;
@@ -64,13 +65,13 @@ public class TestProviderUpDown {
 			fail("Not yet implemented");
 		}
 	}
-	
+
 	synchronized public void waithere() {
-        try {
-            this.wait();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
+		try {
+			this.wait();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
 
 }

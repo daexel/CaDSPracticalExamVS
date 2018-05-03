@@ -1,9 +1,10 @@
-package cads.org.Middleware;
+package cads.org.Middleware.Skeleton;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
+import java.util.Arrays;
 
 import cads.org.client.Order;
 import cads.org.client.Service;
@@ -28,19 +29,17 @@ public abstract class ServiceOrderReceiver {
 
 		@Override
 		public void run() {
-			Order order = new Order(0, 0, Service.ESTOP, 0); // dummy
-			int bufLength = Order.parseOrder(order).length;
-			byte[] buf = new byte[bufLength];
-			DatagramPacket r = new DatagramPacket(buf, bufLength);
+			int bufMaxLength = 62;
+			byte[] buf = new byte[bufMaxLength];
+			DatagramPacket r = new DatagramPacket(buf, bufMaxLength);
 			try {
 				sock.receive(r);
+				byte[] duf = r.getData();
 				useService(Order.parseReceivedMessage(r.getData()));
 
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-
 		}
 
 	});

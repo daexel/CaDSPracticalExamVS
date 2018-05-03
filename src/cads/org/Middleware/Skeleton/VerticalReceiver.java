@@ -1,4 +1,4 @@
-package cads.org.Middleware;
+package cads.org.Middleware.Skeleton;
 
 import cads.org.client.Order;
 import cads.org.client.Service;
@@ -12,7 +12,7 @@ public class VerticalReceiver extends ServiceOrderReceiver {
 
 	@Override
 	public void useService(Order order) {
-		RoboterFactory.getService(Service.VERTICAL, ResponsibiltySide.SERVER).move(order);
+		//RoboterFactory.getService(Service.VERTICAL, ResponsibiltySide.SERVER).move(order);
 	}
 
 }

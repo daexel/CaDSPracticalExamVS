@@ -20,35 +20,10 @@ import org.json.simple.parser.ParseException;
  */
 public class Order {
 	private int tid;
-	int roboter;
+	private int roboter;
 	private Service service;
 	private int valueOfMovement;
 	private boolean isOpen;
-
-	/**
-	 * Order
-	 * 
-	 * For creating a grab order
-	 * 
-	 * @param tid
-	 * @param roboter
-	 * @param service
-	 * @param isOpen
-	 * @throws WrongMethodTypeException
-	 */
-	
-	public Order(int tid, int roboter, Service service, boolean isOpen) throws WrongMethodTypeException {
-		if (service != Service.GRABBER) {
-			throw new WrongMethodTypeException("Use different constructor for movement order.");
-		}
-		this.tid = tid;
-		this.roboter = roboter;
-		this.service = service;
-		this.isOpen = isOpen;
-		this.valueOfMovement = 0;
-
-	}
-	
 
 	/**
 	 * Order
@@ -59,19 +34,16 @@ public class Order {
 	 * @param roboter
 	 * @param service
 	 * @param valueOfMovement
-	 * @throws WrongMethodTypeException
+	 * @param isOPen
 	 */
-	public Order(int tid, int roboter, Service service, int valueOfMovement) throws WrongMethodTypeException {
-		if (service != Service.VERTICAL & service != Service.HORIZONTAL) {
-			throw new WrongMethodTypeException("Use different constructor for movement order.");
-		}
+	public Order(int tid, int roboter, Service service, int valueOfMovement, boolean isOpen) {
+
 		this.tid = tid;
 		this.roboter = roboter;
 		this.service = service;
 		this.valueOfMovement = valueOfMovement;
-		this.isOpen = false;
+		this.isOpen = isOpen;
 	}
-
 
 	/**
 	 * parseOrder
@@ -87,6 +59,7 @@ public class Order {
 		jasonOrder.put("TID", order.getTid());
 		jasonOrder.put("Service", order.getService().ordinal());
 		jasonOrder.put("Value", order.getValueOfMovement());
+		jasonOrder.put("isOpen", Boolean.toString(order.getGrabState()));
 
 		System.out.println("Parser: created:" + jasonOrder.toJSONString());
 
@@ -113,35 +86,28 @@ public class Order {
 	static public Order parseReceivedMessage(byte[] buffer) {
 		Order receivedOrder = null;
 		String bufferedString = null;
+
 		try {
 			bufferedString = new String(buffer, charset);
 		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
-		System.out.println(bufferedString);
+		bufferedString = bufferedString.split("}")[0];
+		bufferedString += "}";
 		JSONParser parser = new JSONParser();
 		JSONObject json = null;
+
 		try {
 			json = (JSONObject) parser.parse(bufferedString);
 		} catch (ParseException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		System.out.println("JSON: " + json.toString());
-		System.out.println("Parser: incoming length: " + buffer.length);
-		System.out.println(json.get("Service").getClass().toString());
 
-		if ((long) json.get("Service") == Service.GRABBER.ordinal()) {
-			receivedOrder = new Order(Integer.parseInt(json.get("TID").toString()), 0, Service.GRABBER,
-					Boolean.parseBoolean(json.get("Value").toString()));
-		} else if ((long) json.get("Service") == (Service.HORIZONTAL.ordinal())
-				| (long) json.get("Service") == (Service.VERTICAL.ordinal())) {
-			receivedOrder = new Order(Integer.parseInt(json.get("TID").toString()), 0,
-					Service.values()[(int) (long) json.get("Service")], Integer.parseInt(json.get("Value").toString()));
-		}
-		System.out.println(receivedOrder.toString());
+		receivedOrder = new Order(Integer.parseInt(json.get("TID").toString()), 0,
+				Service.values()[(int) (long) json.get("Service")], Integer.parseInt(json.get("Value").toString()),
+				Boolean.parseBoolean(json.get("isOpen").toString()));
 
 		return receivedOrder;
 	}
@@ -177,12 +143,17 @@ public class Order {
 	public void setOpen(boolean isOpen) {
 		this.isOpen = isOpen;
 	}
+
 	public int getSize() {
 		return this.getSize();
 	}
-	
+
 	public int getRoboterID() {
 		return this.roboter;
+	}
+
+	public boolean getGrabState() {
+		return this.isOpen;
 	}
 
 	@Override
