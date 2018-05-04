@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
+import java.util.Arrays;
 
 import cads.org.Server.ModelRobot;
 import cads.org.Server.ServerRobot;
@@ -31,19 +32,19 @@ public abstract class ServiceOrderReceiver {
 
 		@Override
 		public void run() {
-			Order order = new Order(0, 0, Service.ESTOP, 0, false); // dummy
-			int bufLength = Order.parseOrder(order).length;
-			byte[] buf = new byte[bufLength];
-			DatagramPacket r = new DatagramPacket(buf, bufLength);
+
+			int bufMaxLength = 62;
+			byte[] buf = new byte[bufMaxLength];
+			DatagramPacket r = new DatagramPacket(buf, bufMaxLength);
+
 			try {
 				sock.receive(r);
+				byte[] duf = r.getData();
 				useService(Order.parseReceivedMessage(r.getData()));
 
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-
 		}
 
 	});

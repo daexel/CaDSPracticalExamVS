@@ -20,7 +20,7 @@ import org.json.simple.parser.ParseException;
  */
 public class Order {
 	private int tid;
-	int roboter;
+	private int roboter;
 	private Service service;
 	private int valueOfMovement;
 	private boolean isOpen;
@@ -34,7 +34,11 @@ public class Order {
 	 * @param roboter
 	 * @param service
 	 * @param valueOfMovement
+<<<<<<< HEAD
+	 * @param isOPen
+=======
 	 * @param isOpen 
+>>>>>>> 4481c53edf32973489972d83d896a63271e6bbe4
 	 */
 	public Order(int tid, int roboter, Service service, int valueOfMovement, boolean isOpen) {
 
@@ -60,8 +64,12 @@ public class Order {
 		jasonOrder.put("RobotNumber",order.getRoboterID());
 		jasonOrder.put("Service", order.getService().ordinal());
 		jasonOrder.put("Value", order.getValueOfMovement());
+<<<<<<< HEAD
+		jasonOrder.put("isOpen", Boolean.toString(order.getGrabState()));
+=======
 		jasonOrder.put("Grapperbool", order.getIsOpen());
 		
+>>>>>>> 4481c53edf32973489972d83d896a63271e6bbe4
 
 		System.out.println("Parser: created:" + jasonOrder.toJSONString());
 
@@ -89,22 +97,30 @@ public class Order {
 		Service serviceReceived = null;
 		Order receivedOrder = null;
 		String bufferedString = null;
+
 		try {
 			bufferedString = new String(buffer, charset);
 		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
-		System.out.println(bufferedString);
+		bufferedString = bufferedString.split("}")[0];
+		bufferedString += "}";
 		JSONParser parser = new JSONParser();
 		JSONObject json = null;
+
 		try {
 			json = (JSONObject) parser.parse(bufferedString);
 		} catch (ParseException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
+<<<<<<< HEAD
+
+		receivedOrder = new Order(Integer.parseInt(json.get("TID").toString()), 0,
+				Service.values()[(int) (long) json.get("Service")], Integer.parseInt(json.get("Value").toString()),
+				Boolean.parseBoolean(json.get("isOpen").toString()));
+=======
 		System.out.println("JSON: " + json.toString());
 		System.out.println("Parser: incoming length: " + buffer.length);
 		System.out.println(json.get("Service").getClass().toString());
@@ -127,6 +143,7 @@ public class Order {
 					Integer.parseInt(json.get("Value").toString()),
 					Boolean.parseBoolean(json.get("Grapperbool").toString()));
 		System.out.println(receivedOrder.toString());
+>>>>>>> 4481c53edf32973489972d83d896a63271e6bbe4
 
 		return receivedOrder;
 	}
@@ -169,6 +186,10 @@ public class Order {
 
 	public int getRoboterID() {
 		return this.roboter;
+	}
+
+	public boolean getGrabState() {
+		return this.isOpen;
 	}
 
 	@Override

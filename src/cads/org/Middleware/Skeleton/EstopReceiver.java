@@ -12,8 +12,8 @@ public class EstopReceiver extends ServiceOrderReceiver {
 
 	@Override
 	public void useService(Order order) {
-		System.out.println(order.toString());
-		RoboterFactory.getService(Service.ESTOP, ResponsibiltySide.SERVER).move(order);
+		//System.out.println(order.toString());
+		//RoboterFactory.getService(Service.ESTOP, ResponsibiltySide.SERVER).move(order);
 	}
 
 }

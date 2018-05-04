@@ -1,6 +1,5 @@
 package cads.org.Middleware.Skeleton;
 
-import cads.org.Server.RoboterFactoryServer;
 import cads.org.client.Order;
 import cads.org.client.Service;
 
@@ -13,7 +12,9 @@ public class GrabberReceiver extends ServiceOrderReceiver {
 
 	@Override
 	public void useService(Order order) {
+
 		RoboterFactory.getService(Service.GRABBER, ResponsibiltySide.SERVER).move(order);
+
 	}
 
 }
