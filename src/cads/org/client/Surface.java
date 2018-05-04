@@ -97,7 +97,7 @@ public class Surface implements IIDLCaDSEV3RMIMoveGripper, IIDLCaDSEV3RMIMoveHor
 
 	@Override
 	public int moveVerticalToPercent(int arg0, int arg1) throws Exception {
-		this.order = new Order(arg0,currentRoboters,Service.VERTICAL,arg1);
+		this.order = new Order(arg0,currentRoboters,Service.VERTICAL,arg1,false);
 		this.queue.add(order);
 		System.out.println("Robot moved Vertical "+arg0+"  "+arg1);
 		gui.setVerticalProgressbar(arg1);
@@ -112,7 +112,7 @@ public class Surface implements IIDLCaDSEV3RMIMoveGripper, IIDLCaDSEV3RMIMoveHor
 
 	@Override
 	public int moveHorizontalToPercent(int arg0, int arg1) throws Exception {
-		order = new Order(arg0,currentRoboters,Service.HORIZONTAL,arg1);
+		order = new Order(arg0,currentRoboters,Service.HORIZONTAL,arg1,false);
 		System.out.println("Robot moved Horizontal"+arg0+" "+arg1);	
 		this.queue.add(order);
 		gui.setHorizontalProgressbar(arg1);
@@ -127,7 +127,7 @@ public class Surface implements IIDLCaDSEV3RMIMoveGripper, IIDLCaDSEV3RMIMoveHor
 
 	@Override
 	public int closeGripper(int arg0) throws Exception, IOException {
-		order = new Order(arg0, currentRoboters,service.GRABBER, false);
+		order = new Order(arg0, currentRoboters,service.GRABBER,0, false);
 		this.queue.add(order);
 		System.out.println("Gripper closed");
 		return 0;
@@ -140,7 +140,7 @@ public class Surface implements IIDLCaDSEV3RMIMoveGripper, IIDLCaDSEV3RMIMoveHor
 
 	@Override
 	public int openGripper(int arg0) throws Exception {
-		order = new Order(arg0, currentRoboters,service.GRABBER, true);
+		order = new Order(arg0, currentRoboters,service.GRABBER,0, true);
 		this.queue.add(order);
 		System.out.println("Gripper opened");
 		return 0;

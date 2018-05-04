@@ -4,7 +4,7 @@ import cads.org.client.Order;
 import cads.org.client.Service;
 
 public class EstopReceiver extends ServiceOrderReceiver {
-
+	
 	public EstopReceiver(int port) {
 		super(port);
 		// TODO Auto-generated constructor stub

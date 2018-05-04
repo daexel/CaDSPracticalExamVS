@@ -14,7 +14,6 @@ public class GrabberReceiver extends ServiceOrderReceiver {
 	@Override
 	public void useService(Order order) {
 		RoboterFactory.getService(Service.GRABBER, ResponsibiltySide.SERVER).move(order);
-		RoboterFactoryServer.getService(RobotNumber)
 	}
 
 }

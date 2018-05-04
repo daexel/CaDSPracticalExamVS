@@ -5,6 +5,8 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
 
+import cads.org.Server.ModelRobot;
+import cads.org.Server.ServerRobot;
 import cads.org.client.Order;
 import cads.org.client.Service;
 
@@ -12,8 +14,9 @@ public abstract class ServiceOrderReceiver {
 	private DatagramSocket sock;
 	private int p;
 	private Order o;
+	private ModelRobot robot;
 
-	public ServiceOrderReceiver(int port) {
+	public ServiceOrderReceiver(int port, ModelRobot robot) {
 		p = port;
 		try {
 			sock = new DatagramSocket(p);

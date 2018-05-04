@@ -1,6 +1,6 @@
 package cads.org.Middleware.Skeleton;
 
-import cads.org.Server.HalFactory;
+import cads.org.Server.Services.HalFactory;
 import cads.org.client.Order;
 import cads.org.client.Service;
 
