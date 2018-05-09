@@ -3,6 +3,7 @@
  */
 package cads.org.Server.Services;
 
+import cads.org.Middleware.Skeleton.RoboterService;
 import cads.org.Server.RobotHal;
 import cads.org.Server.Services.EstopServiceServer;
 import cads.org.Server.Services.GrapperServiceServer;
@@ -15,7 +16,7 @@ import cads.org.client.Service;
  *
  */
 public class HalFactory {
-	public static RobotHal getRobot(Service serviceType ) {
+	public static RoboterService getService(Service serviceType ) {
 		if (serviceType == Service.GRABBER) {
 			return new cads.org.Server.Services.GrapperServiceServer();
 		} else if (serviceType == Service.VERTICAL) {

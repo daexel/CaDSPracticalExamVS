@@ -3,6 +3,8 @@
  */
 package cads.org.Server;
 
+import org.json.simple.JSONObject;
+
 import cads.org.client.Order;
 
 /**
@@ -15,7 +17,9 @@ public void moveLeft();
 public void moveRight();
 public void moveUp();
 public void moveDown();
-public int getFeedback();
+public long getHorizontalStatus();
+public long getVerticalStatus();
+public boolean getGrapperStatus();
 public void stopRobotFeedback();
 
 }

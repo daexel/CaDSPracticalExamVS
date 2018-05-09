@@ -15,7 +15,7 @@ public class HorizontalReceiver extends ServiceOrderReceiver {
 	public void useService(Order order) {
 
 		RoboterFactory.getService(Service.HORIZONTAL, ResponsibiltySide.SERVER).move(order);
-		HalFactory.getHal(Service.HORIZONTAL).executeOrder(order);
+		HalFactory.getService(Service.HORIZONTAL).move(order);
 
 	}
 

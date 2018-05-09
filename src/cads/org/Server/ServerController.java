@@ -3,10 +3,16 @@
  */
 package cads.org.Server;
 
+import java.util.concurrent.TimeUnit;
+
 import org.cads.ev3.middleware.CaDSEV3RobotHAL;
 import org.json.simple.JSONObject;
 
+import cads.org.Middleware.Skeleton.ResponsibiltySide;
+import cads.org.Middleware.Skeleton.RoboterFactory;
+import cads.org.Server.Services.HalFactory;
 import cads.org.Server.Services.HorizontalServiceServer;
+import cads.org.client.Feedback;
 import cads.org.client.Order;
 import cads.org.client.Service;
 
@@ -16,10 +22,6 @@ import cads.org.client.Service;
  */
 public class ServerController implements Runnable {
 private ModelRobot robot;
-
-private Thread verticalThread;
-private Thread grapperThread;
-private Thread eStopThread;
 private Order currentOrder;
 private int timesOfMovement;
 private boolean horizontalThreadIsRunning;
@@ -33,6 +35,13 @@ public ServerController() {
 	grapperThreadIsRunning=true;
 	estopThreadIsRunning=true;
 	this.robot = new ModelRobot();
+	this.robot.start();
+	System.out.println("Robot gestartet");
+	this.robot.getHorizontalService().start();
+	System.out.println("Horizontal Service gestartet");
+	HorizontalThread hori = new HorizontalThread();
+	hori.start();
+	System.out.println("HoriThread gestartet");
 		
 }
 
@@ -43,26 +52,43 @@ public void fillOrder(Order order) {
 @Override
 public void run() {
 	System.out.println("ServerController läuft!");
-	
+
+	/**Hier werden die jeweiligen Services gestartet oder unterbrochen, wenn 
+	/*der Roboter die richtige Stellung erreicht hat
+	**/
+}
+public ModelRobot getRobot() {
+	return robot;
 }
 
+public void setRobot(ModelRobot robot) {
+	this.robot = robot;
+}
 
+/**
+ * 
+ * @author daexel
+ *
+ * Thread to move the Robot Left or Right need Feedback 
+ */
 public class HorizontalThread extends Thread {
 	
 	@Override
 	public void run() {
-		Order order = new Order(1,2,Service.HORIZONTAL,10,false);
-		fillOrder(order);
 		while(horizontalThreadIsRunning) {
-			System.out.println("horizontalThread is Running");
 			currentOrder=robot.getHorizontalService().getCurrentOrder();
 			if(currentOrder!=null) {
-			timesOfMovement=currentOrder.getValueOfMovement();
-			while(!robot.getHorizontalService().getNewOrderIsComming()||timesOfMovement!=0) {
-					System.out.println("Nach Links bewegt");
-					robot.moveLeft();//Hier blockiert der Thread!
-					timesOfMovement--;
-			}
+			 if(robot.getHorizontalStatus()<currentOrder.getValueOfMovement()) {
+				 robot.moveLeft();
+					System.out.println("Order empfangen Links");
+			 }
+			 if(robot.getHorizontalStatus()>currentOrder.getValueOfMovement()) {
+				 //moveRight läuft einmal komplett rum und blockiert
+				 robot.moveRight();
+				
+					System.out.println("Order empfangen Rechts");
+				 }
+
 			}
 		}
 	}
@@ -74,9 +100,18 @@ public class HorizontalThread extends Thread {
 public static void main(String[] args) throws InterruptedException {
 	ServerController srv = new ServerController();
 
+	Order order = new Order(1, 12, Service.HORIZONTAL, 50, false);
+	srv.getRobot().getService(Service.HORIZONTAL).move(order);
+	TimeUnit.SECONDS.sleep(10);
+	Order order2 = new Order(1, 12, Service.HORIZONTAL, 2, false);
+	srv.getRobot().getService(Service.HORIZONTAL).move(order2);
 	
-	
+	while(true) {
+		
+	}
 }
+
+
 
 
 }

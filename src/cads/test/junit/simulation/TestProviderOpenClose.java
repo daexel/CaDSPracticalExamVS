@@ -23,7 +23,7 @@ public class TestProviderOpenClose {
 
 		@Override
 		public synchronized void onStatusMessage(JSONObject status) {
-			System.out.println(status);
+			System.out.println(status.get("percent"));
 
 		}
 

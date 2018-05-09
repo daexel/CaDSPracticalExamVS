@@ -7,7 +7,6 @@ import java.net.SocketException;
 import java.util.Arrays;
 
 import cads.org.Server.ModelRobot;
-import cads.org.Server.ServerRobot;
 import cads.org.client.Order;
 import cads.org.client.Service;
 
@@ -17,7 +16,7 @@ public abstract class ServiceOrderReceiver {
 	private Order o;
 	private ModelRobot robot;
 
-	public ServiceOrderReceiver(int port, ModelRobot robot) {
+	public ServiceOrderReceiver(int port) {
 		p = port;
 		try {
 			sock = new DatagramSocket(p);

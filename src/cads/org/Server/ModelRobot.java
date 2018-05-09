@@ -33,19 +33,19 @@ import cads.parser.generated.Rob_Test;
  * @author daexel
  *
  */
-public class ModelRobot implements Runnable, ICaDSEV3RobotStatusListener, ICaDSEV3RobotFeedBackListener, RobotHal{
+public class ModelRobot extends Thread implements ICaDSEV3RobotStatusListener, ICaDSEV3RobotFeedBackListener, RobotHal{
 	
 	private EstopServiceServer estopService;
 	private GrapperServiceServer grapperService;
 	private HorizontalServiceServer horizontalService;
 	private VerticalServiceServer verticalService;
-	
-	private Thread horizontalThread;
-	private Thread verticalThread;
-	private Thread grapperThread;
-	private Thread eStopThread;
+
 	
 	private JSONObject feedback;
+	private JSONObject statusGripper;
+	private JSONObject statusHorizontal;
+	private JSONObject statusVertical;
+	
 	
 	private static CaDSEV3RobotHAL callerBot = null;
 	private boolean mainThreadIsRunning=true;
@@ -70,25 +70,6 @@ public class ModelRobot implements Runnable, ICaDSEV3RobotStatusListener, ICaDSE
 	
 	
 	
-//	public void executeOrder(Order order) {
-//		if(order.getService().equals(Service.GRABBER)) {
-//			ordersGrapperQueue.add(order);
-//			grapperThread.notify();
-//			
-//		}
-//		if(order.getService().equals(Service.HORIZONTAL)) {
-//			ordersHorizontalQueue.add(order);
-//			horizontalThread.notify();
-//		}
-//		if(order.getService().equals(Service.VERTICAL)){
-//			ordersVerticalQueue.add(order);
-//			verticalThread.notify();
-//		}
-//		if(order.getService().equals(Service.ESTOP)){
-//			ordersEstopQueue.add(order);
-//			estopThread.notify();
-//		}
-//	}
 
 	
 	public ModelRobot() {
@@ -97,32 +78,35 @@ public class ModelRobot implements Runnable, ICaDSEV3RobotStatusListener, ICaDSE
 		grapperService = new GrapperServiceServer();
 		verticalService = new VerticalServiceServer();
 		horizontalService = new HorizontalServiceServer();
-		Order order = new Order(1, 12, Service.HORIZONTAL, 10, true);
-		this.getService(Service.HORIZONTAL).move(order);
-		this.run();
+		
 		
 	}
 	
 	
    @Override
    public synchronized void giveFeedbackByJSonTo(JSONObject feedback) {
-		//System.out.println(feedback);
 		
    }
 
    @Override
    public synchronized void onStatusMessage(JSONObject status) {
-	   //System.out.println(status);
+	   if(status.get("state")=="gripper") {
+		   this.statusGripper=status;
+	   }
+	   if(status.get("state")=="horizontal") {
+		   this.statusHorizontal=status;
+	   }
+	   if(status.get("state")=="vertical") {
+		   this.statusVertical=status;
+	   }
 
    }
   
 	@Override
 	public void run() {
 		while(mainThreadIsRunning) {
-			System.out.println("RobotMainThread läuft");
-			if(horizontalService.getNewOrderIsComming()==true) {
-				callerBot.moveLeft();
-			}
+			//System.out.println("RobotMainThread läuft");
+			
 		}
 		
 	}
@@ -148,11 +132,36 @@ public class ModelRobot implements Runnable, ICaDSEV3RobotStatusListener, ICaDSE
 		callerBot.moveDown();
 		
 	}
+	
+	@Override
+	public long getHorizontalStatus() {
+		if(statusHorizontal!=null) {
+			return (long) statusHorizontal.get("percent");
+		}else {
+			return 0;
+		}
+	}
+
 
 	@Override
-	public int getFeedback() {
-		return 0;
+	public long getVerticalStatus() {
+		if(statusVertical!=null) {
+			return (long) statusVertical.get("percent");
+		}else {
+			return 0;
+		}
 	}
+
+	@Override
+	public boolean getGrapperStatus() {
+		if(statusGripper.get("value")=="open") {
+			return true;
+		}else {
+			return false;
+		}
+	}
+
+
 
 	@Override
 	public void stopRobotFeedback() {
@@ -180,6 +189,22 @@ public class ModelRobot implements Runnable, ICaDSEV3RobotStatusListener, ICaDSE
 	}
 
 	
+	public static CaDSEV3RobotHAL getCallerBot() {
+		return callerBot;
+	}
+
+
+
+
+
+	public static void setCallerBot(CaDSEV3RobotHAL callerBot) {
+		ModelRobot.callerBot = callerBot;
+	}
+
+
+
+
+
 	public void setHorizontalService(HorizontalServiceServer horizontalService) {
 		this.horizontalService = horizontalService;
 	}
@@ -201,20 +226,28 @@ public class ModelRobot implements Runnable, ICaDSEV3RobotStatusListener, ICaDSE
 	public static void main(String[] args) throws InterruptedException {
 	
 	ModelRobot robot = new ModelRobot();
-	Order order = new Order(1, 12, Service.GRABBER, 0, true);
-	robot.getService(Service.ESTOP).move(order);
+	robot.start();
+	robot.horizontalService.start();
+	
+	Order order = new Order(1, 12, Service.HORIZONTAL, 50, false);
+	robot.getService(Service.HORIZONTAL).move(order);
+	TimeUnit.MINUTES.sleep(1);
+	Order order2 = new Order(1, 12, Service.HORIZONTAL, 2, false);
+	robot.getService(Service.HORIZONTAL).move(order2);
+	
+	while(true) {
 		
-//	ModelRobot bot = new ModelRobot();
-//	bot.run();
-//	TimeUnit.SECONDS.sleep(5);
-//	//System.out.println("5 Sekunden sind abgelaufen!");
-//	bot.stopThread();
-//	
+	}
+	
+		
 	
 	}
 
 
 
+
+
+	
 	
 }
 

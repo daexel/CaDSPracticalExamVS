@@ -6,8 +6,8 @@ import cads.org.client.Service;
 
 public class VerticalReceiver extends ServiceOrderReceiver {
 
-	public VerticalReceiver(int port, ModelRobot robot) {
-		super(port, robot);
+	public VerticalReceiver(int port) {
+		super(port);
 		// TODO Auto-generated constructor stub
 	}
 
