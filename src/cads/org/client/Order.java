@@ -64,12 +64,8 @@ public class Order {
 		jasonOrder.put("RobotNumber",order.getRoboterID());
 		jasonOrder.put("Service", order.getService().ordinal());
 		jasonOrder.put("Value", order.getValueOfMovement());
-<<<<<<< HEAD
-		jasonOrder.put("isOpen", Boolean.toString(order.getGrabState()));
-=======
 		jasonOrder.put("Grapperbool", order.getIsOpen());
-		
->>>>>>> 4481c53edf32973489972d83d896a63271e6bbe4
+
 
 		System.out.println("Parser: created:" + jasonOrder.toJSONString());
 
@@ -115,12 +111,13 @@ public class Order {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-<<<<<<< HEAD
+
 
 		receivedOrder = new Order(Integer.parseInt(json.get("TID").toString()), 0,
 				Service.values()[(int) (long) json.get("Service")], Integer.parseInt(json.get("Value").toString()),
-				Boolean.parseBoolean(json.get("isOpen").toString()));
-=======
+				Boolean.parseBoolean(json.get("Grapperbool").toString()));
+
+		/*
 		System.out.println("JSON: " + json.toString());
 		System.out.println("Parser: incoming length: " + buffer.length);
 		System.out.println(json.get("Service").getClass().toString());
@@ -143,7 +140,7 @@ public class Order {
 					Integer.parseInt(json.get("Value").toString()),
 					Boolean.parseBoolean(json.get("Grapperbool").toString()));
 		System.out.println(receivedOrder.toString());
->>>>>>> 4481c53edf32973489972d83d896a63271e6bbe4
+		*/
 
 		return receivedOrder;
 	}
