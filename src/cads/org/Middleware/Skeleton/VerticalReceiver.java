@@ -13,6 +13,7 @@ public class VerticalReceiver extends ServiceOrderReceiver {
 	@Override
 	public void useService(Order order) {
 		//RoboterFactory.getService(Service.VERTICAL, ResponsibiltySide.SERVER).move(order);
+		
 	}
 
 }

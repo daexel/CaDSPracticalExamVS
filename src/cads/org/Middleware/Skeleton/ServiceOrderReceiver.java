@@ -4,15 +4,12 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
-import java.util.Arrays;
 
 import cads.org.client.Order;
-import cads.org.client.Service;
 
 public abstract class ServiceOrderReceiver {
 	private DatagramSocket sock;
 	private int p;
-	private Order o;
 
 	public ServiceOrderReceiver(int port) {
 		p = port;
@@ -29,7 +26,6 @@ public abstract class ServiceOrderReceiver {
 
 		@Override
 		public void run() {
-
 			int bufMaxLength = 62;
 			byte[] buf = new byte[bufMaxLength];
 			DatagramPacket r = new DatagramPacket(buf, bufMaxLength);
