@@ -36,10 +36,11 @@ public class HorizontalServiceServer extends Thread implements RoboterService {
 		@Override
 		public void run() {
 			while(dogIsRunning) {
+				
 				//System.out.println("Horizontal-Dog is running!");
-				if(ordersHorizontalQueue.size()!=0) {
-					currentOrder=ordersHorizontalQueue.poll();
-				}
+				//if(ordersHorizontalQueue.size()!=0) {
+				//	currentOrder=ordersHorizontalQueue.poll();
+				//}
 				
 				
 				/**
@@ -70,11 +71,9 @@ public class HorizontalServiceServer extends Thread implements RoboterService {
 	}
 
 	public Order getCurrentOrder() {
-
 			System.out.println("Order entnommen");
 			newOrderIsComming=false;
 			return ordersHorizontalQueue.poll();
-			
 	}
 	
 

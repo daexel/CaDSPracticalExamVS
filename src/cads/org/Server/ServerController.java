@@ -46,8 +46,11 @@ public class ServerController implements Runnable {
 		HorizontalThread hori = new HorizontalThread();
 		hori.start();
 		System.out.println("HoriThread gestartet");
-		Order order = new Order(1, 12, Service.HORIZONTAL, 50, false);
+		Order order = new Order(1, 12, Service.HORIZONTAL, 90, false);
 		robot.getService(Service.HORIZONTAL).move(order);
+		TimeUnit.SECONDS.sleep(3);
+		Order order2 = new Order(1, 12, Service.HORIZONTAL, 20, false);
+		robot.getService(Service.HORIZONTAL).move(order2);
 	}
 
 	public void fillOrder(Order order) {
@@ -108,7 +111,6 @@ public class ServerController implements Runnable {
 		@Override
 		public void run() {
 			while (horizontalThreadIsRunning) {
-				System.out.println(currentOrder.getValueOfMovement());
 				if (currentOrder != null) {
 					System.out.println(currentOrder.getValueOfMovement());
 					if (robot.getHorizontalStatus() == currentOrder.getValueOfMovement()) {
@@ -117,6 +119,10 @@ public class ServerController implements Runnable {
 						robot.stopHorizontal();
 						System.out.println("Robot gestoppt");
 
+					}
+					else if (robot.getHorizontalService().getNewOrderIsComming() == true) {
+						robot.stopHorizontal();
+						System.out.println("Robot gestoppt");
 					}
 
 				}
@@ -131,7 +137,7 @@ public class ServerController implements Runnable {
 		srv.robot = new ModelRobot();
 		srv.robot.start();
 		System.out.println("Robot gestartet");
-		TimeUnit.SECONDS.sleep(2);
+		TimeUnit.SECONDS.sleep(1);
 		srv.startServices();
 		while (true) {
 
