@@ -12,6 +12,10 @@ public abstract class ServiceOrderReceiver {
 	private DatagramSocket sock;
 	private int p;
 
+	private Order o;
+	private ModelRobot robot;
+
+
 	public ServiceOrderReceiver(int port) {
 		p = port;
 		try {
@@ -27,7 +31,7 @@ public abstract class ServiceOrderReceiver {
 
 		@Override
 		public void run() {
-			int bufMaxLength = 62;
+			int bufMaxLength = 70;
 			byte[] buf = new byte[bufMaxLength];
 			DatagramPacket r = new DatagramPacket(buf, bufMaxLength);
 

@@ -48,10 +48,12 @@ public class ServerController implements Runnable {
 		HorizontalThreadStop stophori = new HorizontalThreadStop();
 		stophori.start();
 		System.out.println("HoriThreadStop gestartet");
+
 		Order order = new Order(1, 12, Service.HORIZONTAL, 90, false);
 		robot.getService(Service.HORIZONTAL).move(order);
 		TimeUnit.SECONDS.sleep(3);
 		Order order2 = new Order(1, 12, Service.HORIZONTAL, 20, false);
+
 		robot.getService(Service.HORIZONTAL).move(order2);
 	}
 
@@ -61,12 +63,14 @@ public class ServerController implements Runnable {
 
 	@Override
 	public void run() {
-		System.out.println("ServerController läuft!");
+
+		System.out.println("ServerController lï¿½uft!");
 
 		/**
 		 * Hier werden die jeweiligen Services gestartet oder unterbrochen, wenn /*der
 		 * Roboter die richtige Stellung erreicht hat
 		 **/
+
 	}
 
 	public ModelRobot getRobot() {
@@ -99,6 +103,7 @@ public class ServerController implements Runnable {
 							robot.moveLeft();
 						} else {
 							System.out.println("Order empfangen Rechts");
+
 							robot.moveRight();
 						}
 
@@ -112,12 +117,14 @@ public class ServerController implements Runnable {
 	public class HorizontalThreadStop extends Thread {
 		@Override
 		public void run() {
+
 			while (horizontalThreadStopperIsRunning) {
 				if (currentOrder != null) {
 					System.out.println(currentOrder.getValueOfMovement());
 					if ((robot.getHorizontalStatus() == currentOrder.getValueOfMovement())
 							||(robot.getHorizontalService().getNewOrderIsComming() == true)) {
 						robot.stopHorizontal();
+
 						System.out.println("status: " + robot.getHorizontalStatus());
 						System.out.println("currentOrder: " + currentOrder.getValueOfMovement());
 						System.out.println("Robot gestoppt");
@@ -126,11 +133,12 @@ public class ServerController implements Runnable {
 				}
 				else {
 					System.out.println("CurrentOrder ist Null");
+
 				}
 
 			}
-		}
 
+		}
 	};
 
 	public static void main(String[] args) throws InterruptedException {
@@ -138,11 +146,12 @@ public class ServerController implements Runnable {
 		srv.robot = new ModelRobot();
 		srv.robot.start();
 		System.out.println("Robot gestartet");
+
 		TimeUnit.SECONDS.sleep(1);
+
 		srv.startServices();
 		while (true) {
 
 		}
 	}
-
 }
