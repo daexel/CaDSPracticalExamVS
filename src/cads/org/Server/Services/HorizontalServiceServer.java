@@ -56,7 +56,9 @@ public class HorizontalServiceServer extends Thread implements RoboterService {
 	
 	@Override
 	public void move(Order order) {
+		System.out.println("Order hinzugefügt");
 		ordersHorizontalQueue.add(order);
+		newOrderIsComming=true;
 			
 	}
 	public boolean getNewOrderIsComming() {
@@ -68,8 +70,13 @@ public class HorizontalServiceServer extends Thread implements RoboterService {
 	}
 
 	public Order getCurrentOrder() {
-		return ordersHorizontalQueue.poll();
-		//return currentOrder;
+		if(!ordersHorizontalQueue.isEmpty()) {
+			System.out.println("Order entnommen");
+			newOrderIsComming=false;
+			return ordersHorizontalQueue.poll();
+			
+		}
+		return null;
 	}
 
 	public void setCurrentOrder(Order currentOrder) {

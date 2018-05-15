@@ -41,7 +41,6 @@ public class ModelRobot extends Thread implements ICaDSEV3RobotStatusListener, I
 	private VerticalServiceServer verticalService;
 
 	
-	private JSONObject feedback;
 	private JSONObject statusGripper;
 	private JSONObject statusHorizontal;
 	private JSONObject statusVertical;
@@ -116,7 +115,6 @@ public class ModelRobot extends Thread implements ICaDSEV3RobotStatusListener, I
 		callerBot.moveLeft();
 	}
 
-
 	@Override
 	public void moveRight() {
 		callerBot.moveRight();
@@ -133,6 +131,18 @@ public class ModelRobot extends Thread implements ICaDSEV3RobotStatusListener, I
 		
 	}
 	
+	@Override
+	public void stopVertival() {
+		callerBot.stop_v();
+		
+	}
+
+	@Override
+	public void stopHorizontal() {
+		callerBot.stop_h();
+		
+	}
+
 	@Override
 	public long getHorizontalStatus() {
 		if(statusHorizontal!=null) {
@@ -201,10 +211,6 @@ public class ModelRobot extends Thread implements ICaDSEV3RobotStatusListener, I
 		ModelRobot.callerBot = callerBot;
 	}
 
-
-
-
-
 	public void setHorizontalService(HorizontalServiceServer horizontalService) {
 		this.horizontalService = horizontalService;
 	}
@@ -216,37 +222,6 @@ public class ModelRobot extends Thread implements ICaDSEV3RobotStatusListener, I
 	public void setVerticalService(VerticalServiceServer verticalService) {
 		this.verticalService = verticalService;
 	}
-
-
-
-	/**
-	 * ------------------------------------------------------------------------------------
-	 * @throws InterruptedException 
-	 */
-	public static void main(String[] args) throws InterruptedException {
-	
-	ModelRobot robot = new ModelRobot();
-	robot.start();
-	robot.horizontalService.start();
-	
-	Order order = new Order(1, 12, Service.HORIZONTAL, 50, false);
-	robot.getService(Service.HORIZONTAL).move(order);
-	TimeUnit.MINUTES.sleep(1);
-	Order order2 = new Order(1, 12, Service.HORIZONTAL, 2, false);
-	robot.getService(Service.HORIZONTAL).move(order2);
-	
-	while(true) {
-		
-	}
-	
-		
-	
-	}
-
-
-
-
-
 	
 	
 }
