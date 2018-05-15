@@ -46,10 +46,12 @@ public class ServerController implements Runnable {
 		HorizontalThread hori = new HorizontalThread();
 		hori.start();
 		System.out.println("HoriThread gestartet");
-		Order order = new Order(1, 12, Service.HORIZONTAL, 50, false);
+
+		Order order = new Order(1, 12, Service.HORIZONTAL, 90, false);
 		robot.getService(Service.HORIZONTAL).move(order);
-		TimeUnit.SECONDS.sleep(2);
-		Order order2 = new Order(1, 12, Service.HORIZONTAL, 10, false);
+		TimeUnit.SECONDS.sleep(3);
+		Order order2 = new Order(1, 12, Service.HORIZONTAL, 20, false);
+
 		robot.getService(Service.HORIZONTAL).move(order2);
 	}
 
@@ -59,12 +61,14 @@ public class ServerController implements Runnable {
 
 	@Override
 	public void run() {
+
 		System.out.println("ServerController l�uft!");
 
 		/**
 		 * Hier werden die jeweiligen Services gestartet oder unterbrochen, wenn /*der
 		 * Roboter die richtige Stellung erreicht hat
 		 **/
+
 	}
 
 	public ModelRobot getRobot() {
@@ -96,7 +100,9 @@ public class ServerController implements Runnable {
 							robot.moveLeft();
 						} else {
 							System.out.println("Order empfangen Rechts");
+
 							// moveRight l�uft einmal komplett rum und blockiert
+
 							robot.moveRight();
 						}
 
@@ -111,21 +117,26 @@ public class ServerController implements Runnable {
 		@Override
 		public void run() {
 			while (horizontalThreadIsRunning) {
-				// System.out.println("Order ist Null");
+
 				if (currentOrder != null) {
+					System.out.println(currentOrder.getValueOfMovement());
+
 					if (robot.getHorizontalStatus() == currentOrder.getValueOfMovement()) {
 						System.out.println("status: " + robot.getHorizontalStatus());
 						System.out.println("currentOrder: " + currentOrder.getValueOfMovement());
 						robot.stopHorizontal();
 						System.out.println("Robot gestoppt");
 
+					} else if (robot.getHorizontalService().getNewOrderIsComming() == true) {
+						robot.stopHorizontal();
+						System.out.println("Robot gestoppt");
 					}
 
 				}
 
 			}
-		}
 
+		}
 	};
 
 	public static void main(String[] args) throws InterruptedException {
@@ -133,11 +144,12 @@ public class ServerController implements Runnable {
 		srv.robot = new ModelRobot();
 		srv.robot.start();
 		System.out.println("Robot gestartet");
-		TimeUnit.SECONDS.sleep(2);
+
+		TimeUnit.SECONDS.sleep(1);
+
 		srv.startServices();
 		while (true) {
 
 		}
 	}
-
 }
