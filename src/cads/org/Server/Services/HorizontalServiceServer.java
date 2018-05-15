@@ -70,14 +70,13 @@ public class HorizontalServiceServer extends Thread implements RoboterService {
 	}
 
 	public Order getCurrentOrder() {
-		if(!ordersHorizontalQueue.isEmpty()) {
+
 			System.out.println("Order entnommen");
 			newOrderIsComming=false;
 			return ordersHorizontalQueue.poll();
 			
-		}
-		return null;
 	}
+	
 
 	public void setCurrentOrder(Order currentOrder) {
 		this.currentOrder = currentOrder;
