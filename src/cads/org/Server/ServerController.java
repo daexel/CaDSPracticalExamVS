@@ -1,227 +1,145 @@
+/**
+ * 
+ */
 package cads.org.Server;
 
+import java.util.concurrent.TimeUnit;
 
-import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.SocketException;
-import java.util.HashMap;
-import java.util.InputMismatchException;
-import java.util.LinkedList;
-import java.util.Observer;
+import org.cads.ev3.middleware.CaDSEV3RobotHAL;
+import org.json.simple.JSONObject;
 
+import cads.org.Middleware.Skeleton.ResponsibiltySide;
 import cads.org.Middleware.Skeleton.RoboterFactory;
-import cads.org.Middleware.Skeleton.RoboterService;
+import cads.org.Server.Services.HalFactory;
+import cads.org.Server.Services.HorizontalServiceServer;
+import cads.org.client.Feedback;
 import cads.org.client.Order;
 import cads.org.client.Service;
 
-
-
-
 /**
- * ServerController
- * 
- * Receives Orders from the Skeleton/Middleware and send the request
- * 
- * @author Michel Gerlach
- *
- *
+ * @author daexel
  *
  */
-public class ServerController implements Runnable, RoboterService{
+public class ServerController implements Runnable {
+private ModelRobot robot;
+private Order currentOrder;
+private int timesOfMovement;
+private boolean horizontalThreadIsRunning;
+private boolean verticalThreadIsRunning;
+private boolean grapperThreadIsRunning;
+private boolean estopThreadIsRunning;
+
+public ServerController() {
+	horizontalThreadIsRunning=true;
+	verticalThreadIsRunning=true;
+	grapperThreadIsRunning=true;
+	estopThreadIsRunning=true;
+			
+}
+public void startServices() throws InterruptedException {
+	this.robot.getHorizontalService().start();
+	System.out.println("Horizontal Service gestartet");
+	HorizontalThreadStop stophori = new HorizontalThreadStop();
+	stophori.start();
+	System.out.println("HoriThreadStop gestartet");
+	HorizontalThread hori = new HorizontalThread();
+	hori.start();
+	System.out.println("HoriThread gestartet");
+	Order order = new Order(1, 12, Service.HORIZONTAL, 50, false);
+	robot.getService(Service.HORIZONTAL).move(order);
+	TimeUnit.SECONDS.sleep(2);
+	Order order2 = new Order(1, 12, Service.HORIZONTAL, 10, false);
+	robot.getService(Service.HORIZONTAL).move(order2);
+}
+
+public void fillOrder(Order order) {
+	robot.getHorizontalService().setOrdersHorizontalQueue(order);
+}
+
+@Override
+public void run() {
+	System.out.println("ServerController läuft!");
+
+	/**Hier werden die jeweiligen Services gestartet oder unterbrochen, wenn 
+	/*der Roboter die richtige Stellung erreicht hat
+	**/
+}
+public ModelRobot getRobot() {
+	return robot;
+}
+
+public void setRobot(ModelRobot robot) {
+	this.robot = robot;
+}
+
+/**
+ * 
+ * @author daexel
+ *
+ * Thread to move the Robot Left or Right need Feedback 
+ */
+public class HorizontalThread extends Thread {
 	
-	
-	static int serviceContainerArraySize = Service.values().length;
-	private DatagramSocket serverSocket;
-	private int serverPort;
-	private LinkedList<Order> orderList = new LinkedList<Order>();
-	private boolean senderIsRunning = true;
-	
-	
-
-	/*
-	 * ServiceContainer is build like this: serviceContainer[0] = vertical
-	 * serviceContainer[1] = horizontal serviceContainer[2] = grabber
-	 */
-	public ServerController(int serverPort) {
-		this.serverPort = serverPort;
-		try {
-			serverSocket = new DatagramSocket(serverPort);
-		} catch (SocketException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		System.out.println("ControllServer: waiting for some magic....");
-		//sender.start();
-	}
-
-	/**
-	 * close
-	 * 
-	 * Closes the ServerSocket.
-	 */
-	public void close() {
-		senderIsRunning = false;
-		synchronized (this) {
-			notify();
-		}
-		try {
-			serverSocket.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	/**
-	 * update
-	 * 
-	 * Update cares about the services for each robot. If u want to add the first
-	 * service for a robot it will create a new entry in the map. If the roboter is
-	 * already known in the map, it will add the service to this robot.
-	 * 
-	 * @param roboNumber
-	 * @param roboAdress
-	 * @param servicePortNumber
-	 * @param service
-	 * @throws InputMismatchException
-	 *             when the service is already known for this exception.
-	 * @return
-	 */
-	synchronized void update(int roboNumber, InetAddress roboAdress, int servicePortNumber, Service service)
-			throws InputMismatchException {
-		if (!roboMap.containsKey(roboNumber)) {
-			ServiceContainer[] serviceContainerArray = new ServiceContainer[serviceContainerArraySize];
-			serviceContainerArray[service.ordinal()] = new ServiceContainer(service, roboAdress, servicePortNumber);
-			roboMap.put(roboNumber, serviceContainerArray);
-			System.out.println("ControllServer: Created new entry and added in map for roboter number: " + roboNumber);
-		} else {
-			ServiceContainer[] toUpdate = roboMap.get(roboNumber);
-			if (toUpdate[service.ordinal()] != null) {
-				throw new InputMismatchException("Service for this roboter already known.");
-			} else {
-				toUpdate[service.ordinal()] = new ServiceContainer(service, roboAdress, servicePortNumber);
-				System.out.println("ControllServer: Updated entry in map for roboter number: " + roboNumber);
-			}
-		}
-	}
-
-	/**
-	 * pushOrder
-	 * 
-	 * Adds a further order to the list of orders, which have to be send by the Send
-	 * Thread.
-	 * 
-	 * @param order
-	 *            to send asap.
-	 */
-	public void pushOrder(Order order) {
-		orderList.add(order);
-		System.out.println("notifyed");
-		synchronized (this) {
-			notify();
-		}
-	}
-
-	private void sendOrder() {
-		while (senderIsRunning) {
-			synchronized (this) {
-				if (orderList.size() == 0) {
-					try {
-						wait();
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-					continue;
-				}
-				// to retrive the ifrst job in the list
-				Order val = orderList.removeFirst();
-
-				/**
-				 * Sending order
-				 */
-
-				System.out.println("Consumer consumed-" + val);
-
-				// Wake up producer thread
-
-			}
-		}
-	}
-
-	/**
-	 * SENDER
-	 */
-
 	@Override
 	public void run() {
-		//byte[] data = new byte[ 1024 ];
+		while(horizontalThreadIsRunning) {
+			if(robot.getHorizontalService().getNewOrderIsComming()==true) {
+				System.out.println("New Order is Comming");
+				currentOrder=robot.getHorizontalService().getCurrentOrder();
+				if(currentOrder!=null) {
+				System.out.println("ValueOfMovement: "+ currentOrder.getValueOfMovement());
+					if(robot.getHorizontalStatus()<currentOrder.getValueOfMovement()) {
+						System.out.println("Order empfangen Links");
+						robot.moveLeft();
+					}
+					else {
+						System.out.println("Order empfangen Rechts");
+						//moveRight läuft einmal komplett rum und blockiert
+						robot.moveRight();
+					 }
+
+			}
+		}}
+	}
 		
-		//DatagramPacket packet = new DatagramPacket( data, data.length );
-		try {
-			while ( true )
-		    {
-			System.out.println("Warte auf eine Nachricht................");
-			DatagramPacket packet = new DatagramPacket( new byte[1024], 1024 );
-			serverSocket.receive( packet );
-			System.out.println("Empfï¿½nger wird ausgelesen................");
-			  // Empfï¿½nger auslesen
-			
-			  InetAddress address = packet.getAddress();
-			  int         port    = packet.getPort();
-			  int         len     = packet.getLength();
-			  byte[]      daten    = packet.getData();
-			
-			  System.out.printf( "Anfrage von %s vom Port %d mit der Lï¿½nge %d:%n%s%n",
-			                 address, port, len, new String( daten, 0, len ) );
-		    }
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-	}
-//	public Thread sender = new Thread(new Runnable() {
-//
-//		@Override
-//		public void run() {
-//			
-//			System.out.println("Sender: started..");
-//			sendOrder();
-//		}
-//
-//	});
-
-	/**
-	 * READER
-	 */
-	public static class Reader implements Runnable {
-
-		@Override
-		public void run() {
-			// TODO Auto-generated method stub
-
-		}
-
-	}
-
-	public static void main(String[] args) {
-		ServerController server = new ServerController(1330);
-		server.run();
-//		int i = 0;
-//		while (i < 10) {
-//			i++;
-//			System.out.println(i);
-//			server.pushOrder(new Order(0, 0, Service.GRABBER, true));
-//
-//		}
-		server.close();
-	}
-
+};
+public class HorizontalThreadStop extends Thread {
 	@Override
-	public void move(Order order) {
-		// TODO Auto-generated method stub
+	public void run() {
+		while(horizontalThreadIsRunning) {
+			//System.out.println("Order ist Null");
+			if(currentOrder!=null) {
+			 if(robot.getHorizontalStatus()==currentOrder.getValueOfMovement()) {
+				 System.out.println("status: "+robot.getHorizontalStatus());
+				 System.out.println("currentOrder: "+currentOrder.getValueOfMovement());
+				 robot.stopHorizontal();
+				 System.out.println("Robot gestoppt");
+				 
+			 }
+			
+				 }
+
+			}
+		}
+	
+};
+
+
+
+
+public static void main(String[] args) throws InterruptedException {
+	ServerController srv = new ServerController();
+	srv.robot = new ModelRobot();
+	srv.robot.start();
+	System.out.println("Robot gestartet");
+	TimeUnit.SECONDS.sleep(2);
+	srv.startServices();
+	while(true) {
 		
 	}
+}
+
+
+
 
 }

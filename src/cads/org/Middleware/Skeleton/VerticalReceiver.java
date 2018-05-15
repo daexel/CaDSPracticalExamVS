@@ -1,5 +1,6 @@
 package cads.org.Middleware.Skeleton;
 
+import cads.org.Server.ModelRobot;
 import cads.org.client.Order;
 import cads.org.client.Service;
 

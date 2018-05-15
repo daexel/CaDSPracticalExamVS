@@ -11,10 +11,10 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import cads.org.Middleware.Skeleton.ResponsibiltySide;
 import cads.org.Middleware.Skeleton.RoboterFactory;
-import cads.org.Server.EstopServiceServer;
-import cads.org.Server.GrapperServiceServer;
-import cads.org.Server.HorizontalServiceServer;
-import cads.org.Server.VerticalServiceServer;
+import cads.org.Server.Services.EstopServiceServer;
+import cads.org.Server.Services.GrapperServiceServer;
+import cads.org.Server.Services.HorizontalServiceServer;
+import cads.org.Server.Services.VerticalServiceServer;
 
 
 /**
