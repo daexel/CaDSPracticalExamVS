@@ -11,11 +11,8 @@ import cads.org.client.Order;
 public abstract class ServiceOrderReceiver {
 	private DatagramSocket sock;
 	private int p;
-<<<<<<< HEAD
-=======
 	private Order o;
 	private ModelRobot robot;
->>>>>>> 642613747b9be7345087d980d4c556a809161346
 
 	public ServiceOrderReceiver(int port) {
 		p = port;
@@ -32,7 +29,7 @@ public abstract class ServiceOrderReceiver {
 
 		@Override
 		public void run() {
-			int bufMaxLength = 62;
+			int bufMaxLength = 70;
 			byte[] buf = new byte[bufMaxLength];
 			DatagramPacket r = new DatagramPacket(buf, bufMaxLength);
 
