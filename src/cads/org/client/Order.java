@@ -64,10 +64,11 @@ public class Order {
 		jasonOrder.put("RobotNumber", order.getRoboterID());
 		jasonOrder.put("Service", order.getService().ordinal());
 		jasonOrder.put("Value", order.getValueOfMovement());
-
-		jasonOrder.put("isOpen", Boolean.toString(order.getGrabState()));
-
-		jasonOrder.put("Grapperbool", order.getIsOpen());
+		if (order.getGrabState() == true) {
+			jasonOrder.put("Grapperbool", 1);
+		} else {
+			jasonOrder.put("Grapperbool", 0);
+		}
 
 		System.out.println("Parser: created:" + jasonOrder.toJSONString());
 
@@ -114,16 +115,11 @@ public class Order {
 			e1.printStackTrace();
 		}
 
-		receivedOrder = new Order(Integer.parseInt(json.get("TID").toString()), 0,
-				Service.values()[(int) (long) json.get("Service")], Integer.parseInt(json.get("Value").toString()),
-
-				Boolean.parseBoolean(json.get("isOpen").toString()));
-
 		System.out.println("JSON: " + json.toString());
 		System.out.println("Parser: incoming length: " + buffer.length);
 		System.out.println(json.get("Service").getClass().toString());
-		
-		if((long) json.get("Service") == (Service.HORIZONTAL.ordinal())){
+
+		if ((long) json.get("Service") == (Service.HORIZONTAL.ordinal())) {
 			serviceReceived = Service.HORIZONTAL;
 		}
 		if ((long) json.get("Service") == Service.GRABBER.ordinal()) {
@@ -135,14 +131,14 @@ public class Order {
 		if ((long) json.get("Service") == Service.ESTOP.ordinal()) {
 			serviceReceived = Service.ESTOP;
 		}
-			receivedOrder = new Order(Integer.parseInt(json.get("TID").toString()), 
-					Integer.parseInt(json.get("RobotNumber").toString()), 
-					serviceReceived,
-					Integer.parseInt(json.get("Value").toString()),
-					Boolean.parseBoolean(json.get("Grapperbool").toString()));
+		boolean isOpen = true;
+		if (Boolean.parseBoolean(json.get("Grapperbool").toString()) != true) {
+			isOpen = false;
+		}
+		receivedOrder = new Order(Integer.parseInt(json.get("TID").toString()),
+				Integer.parseInt(json.get("RobotNumber").toString()), serviceReceived,
+				Integer.parseInt(json.get("Value").toString()), isOpen);
 		System.out.println(receivedOrder.toString());
-
-
 
 		return receivedOrder;
 	}
