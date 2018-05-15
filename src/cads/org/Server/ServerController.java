@@ -53,8 +53,10 @@ public class ServerController implements Runnable {
 		robot.getService(Service.HORIZONTAL).move(order);
 		TimeUnit.SECONDS.sleep(3);
 		Order order2 = new Order(1, 12, Service.HORIZONTAL, 20, false);
-
 		robot.getService(Service.HORIZONTAL).move(order2);
+		TimeUnit.SECONDS.sleep(1);
+		Order order3 = new Order(1, 12, Service.HORIZONTAL, 70, false);
+		robot.getService(Service.HORIZONTAL).move(order3);
 	}
 
 	public void fillOrder(Order order) {
@@ -120,18 +122,18 @@ public class ServerController implements Runnable {
 
 			while (horizontalThreadStopperIsRunning) {
 				if (currentOrder != null) {
-					System.out.println(currentOrder.getValueOfMovement());
-					if ((robot.getHorizontalStatus() == currentOrder.getValueOfMovement())
-							||(robot.getHorizontalService().getNewOrderIsComming() == true)) {
+					System.out.println("Robotstatus: "+robot.getHorizontalStatus());
+					if (robot.getHorizontalStatus() == currentOrder.getValueOfMovement()){
 						robot.stopHorizontal();
-
 						System.out.println("status: " + robot.getHorizontalStatus());
 						System.out.println("currentOrder: " + currentOrder.getValueOfMovement());
 						System.out.println("Robot gestoppt");
-
 					}
+				if (robot.getHorizontalService().getNewOrderIsComming() == true) {
+					System.out.println("New Order accepted");
+					robot.stopHorizontal();
 				}
-				else {
+				} else {
 					System.out.println("CurrentOrder ist Null");
 
 				}
@@ -148,7 +150,6 @@ public class ServerController implements Runnable {
 		System.out.println("Robot gestartet");
 
 		TimeUnit.SECONDS.sleep(1);
-
 		srv.startServices();
 		while (true) {
 
