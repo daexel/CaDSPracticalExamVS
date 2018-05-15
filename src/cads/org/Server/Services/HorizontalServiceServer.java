@@ -25,7 +25,6 @@ public class HorizontalServiceServer extends Thread implements RoboterService {
 	private ConcurrentLinkedQueue<Order> ordersHorizontalQueue;
 	private boolean newOrderIsComming;
 	private boolean dogIsRunning;
-	private Order currentOrder;
 	
 	public HorizontalServiceServer() {
 		this.dogIsRunning= true;
@@ -57,9 +56,10 @@ public class HorizontalServiceServer extends Thread implements RoboterService {
 	
 	@Override
 	public void move(Order order) {
-		System.out.println("Order hinzugefügt");
+		System.out.println("Start Order hinzugefügt");
 		ordersHorizontalQueue.add(order);
 		newOrderIsComming=true;
+		System.out.println("Ende Order hinzugefügt ");
 			
 	}
 	public boolean getNewOrderIsComming() {
@@ -76,10 +76,6 @@ public class HorizontalServiceServer extends Thread implements RoboterService {
 			return ordersHorizontalQueue.poll();
 	}
 	
-
-	public void setCurrentOrder(Order currentOrder) {
-		this.currentOrder = currentOrder;
-	}
 	
 	public ConcurrentLinkedQueue<Order> getOrdersHorizontalQueue() {
 		return ordersHorizontalQueue;

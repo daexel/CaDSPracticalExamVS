@@ -28,24 +28,26 @@ public class ServerController implements Runnable {
 	private boolean verticalThreadIsRunning;
 	private boolean grapperThreadIsRunning;
 	private boolean estopThreadIsRunning;
+	private boolean horizontalThreadStopperIsRunning;
 
 	public ServerController() {
 		horizontalThreadIsRunning = true;
 		verticalThreadIsRunning = true;
 		grapperThreadIsRunning = true;
 		estopThreadIsRunning = true;
+		horizontalThreadStopperIsRunning = true;
 
 	}
 
 	public void startServices() throws InterruptedException {
 		this.robot.getHorizontalService().start();
 		System.out.println("Horizontal Service gestartet");
-		HorizontalThreadStop stophori = new HorizontalThreadStop();
-		stophori.start();
-		System.out.println("HoriThreadStop gestartet");
 		HorizontalThread hori = new HorizontalThread();
 		hori.start();
 		System.out.println("HoriThread gestartet");
+		HorizontalThreadStop stophori = new HorizontalThreadStop();
+		stophori.start();
+		System.out.println("HoriThreadStop gestartet");
 		Order order = new Order(1, 12, Service.HORIZONTAL, 90, false);
 		robot.getService(Service.HORIZONTAL).move(order);
 		TimeUnit.SECONDS.sleep(3);
@@ -89,6 +91,7 @@ public class ServerController implements Runnable {
 				if (robot.getHorizontalService().getNewOrderIsComming() == true) {
 					System.out.println("New Order is Comming");
 					currentOrder = robot.getHorizontalService().getCurrentOrder();
+					System.out.println("Neue Order entnommen ServerController");
 					if (currentOrder != null) {
 						System.out.println("ValueOfMovement: " + currentOrder.getValueOfMovement());
 						if (robot.getHorizontalStatus() < currentOrder.getValueOfMovement()) {
@@ -96,7 +99,6 @@ public class ServerController implements Runnable {
 							robot.moveLeft();
 						} else {
 							System.out.println("Order empfangen Rechts");
-							// moveRight läuft einmal komplett rum und blockiert
 							robot.moveRight();
 						}
 
@@ -110,21 +112,20 @@ public class ServerController implements Runnable {
 	public class HorizontalThreadStop extends Thread {
 		@Override
 		public void run() {
-			while (horizontalThreadIsRunning) {
+			while (horizontalThreadStopperIsRunning) {
 				if (currentOrder != null) {
 					System.out.println(currentOrder.getValueOfMovement());
-					if (robot.getHorizontalStatus() == currentOrder.getValueOfMovement()) {
+					if ((robot.getHorizontalStatus() == currentOrder.getValueOfMovement())
+							||(robot.getHorizontalService().getNewOrderIsComming() == true)) {
+						robot.stopHorizontal();
 						System.out.println("status: " + robot.getHorizontalStatus());
 						System.out.println("currentOrder: " + currentOrder.getValueOfMovement());
-						robot.stopHorizontal();
 						System.out.println("Robot gestoppt");
 
 					}
-					else if (robot.getHorizontalService().getNewOrderIsComming() == true) {
-						robot.stopHorizontal();
-						System.out.println("Robot gestoppt");
-					}
-
+				}
+				else {
+					System.out.println("CurrentOrder ist Null");
 				}
 
 			}

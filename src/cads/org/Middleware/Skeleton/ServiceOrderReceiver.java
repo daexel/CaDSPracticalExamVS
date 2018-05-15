@@ -11,11 +11,6 @@ import cads.org.client.Order;
 public abstract class ServiceOrderReceiver {
 	private DatagramSocket sock;
 	private int p;
-<<<<<<< HEAD
-=======
-	private Order o;
-	private ModelRobot robot;
->>>>>>> 642613747b9be7345087d980d4c556a809161346
 
 	public ServiceOrderReceiver(int port) {
 		p = port;
