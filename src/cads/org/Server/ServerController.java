@@ -135,7 +135,12 @@ public class ServerController implements Runnable {
 		@Override
 		public void run() {
 			while (horizontalThreadStopperIsRunning) {
-				System.out.println("Irgendwas ausgeben damit das funktioniert");
+				try {
+					this.sleep(10);
+				} catch (InterruptedException e) {
+					// Warum muss der Thread hier schlafen????
+					e.printStackTrace();
+				}
 				if (robot.getHorizontalService().getNewOrderIsComming() == true) {
 					robot.stopHorizontal();
 					System.out.println("Robot stopped source bool");
@@ -156,13 +161,12 @@ public class ServerController implements Runnable {
 	public static void main(String[] args) throws InterruptedException {
 		ServerController srv = new ServerController();
 		srv.run();
-	
 		Order order = new Order(1, 12, Service.HORIZONTAL, 90, false);
 		srv.getRobot().getService(Service.HORIZONTAL).move(order);
-		TimeUnit.SECONDS.sleep(3);
+		TimeUnit.SECONDS.sleep(6);
 		Order order2 = new Order(1, 12, Service.HORIZONTAL, 20, false);
 		srv.getRobot().getService(Service.HORIZONTAL).move(order2);
-		TimeUnit.SECONDS.sleep(1);
+		TimeUnit.SECONDS.sleep(2);
 		Order order3 = new Order(1, 12, Service.HORIZONTAL, 70, false);
 		srv.getRobot().getService(Service.HORIZONTAL).move(order3);
 		while (true) {
