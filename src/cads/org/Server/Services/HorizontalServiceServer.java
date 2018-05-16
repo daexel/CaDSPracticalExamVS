@@ -25,6 +25,7 @@ public class HorizontalServiceServer extends Thread implements RoboterService {
 	private ConcurrentLinkedQueue<Order> ordersHorizontalQueue;
 	private boolean newOrderIsComming;
 	private boolean dogIsRunning;
+	private Order currentOrder;
 	
 	public HorizontalServiceServer() {
 		this.dogIsRunning= true;
@@ -35,13 +36,7 @@ public class HorizontalServiceServer extends Thread implements RoboterService {
 		@Override
 		public void run() {
 			while(dogIsRunning) {
-				
-				//System.out.println("Horizontal-Dog is running!");
-				//if(ordersHorizontalQueue.size()!=0) {
-				//	currentOrder=ordersHorizontalQueue.poll();
-				//}
-				
-				
+	
 				/**
 				 * Der Watchdog gibt immer die aktuelle Order in die CurrentOrder 
 				 * damit direkt reagiert werden kann 
@@ -49,18 +44,17 @@ public class HorizontalServiceServer extends Thread implements RoboterService {
 				
 			}
 		}
-	
+		
+		
 	public void stopThread() {
 		this.dogIsRunning=false;
 	}
 	
 	@Override
 	public void move(Order order) {
-		System.out.println("Start Order hinzugefügt");
-		ordersHorizontalQueue.add(order);
 		newOrderIsComming=true;
-		System.out.println("Ende Order hinzugefügt ");
-			
+		System.out.println("OrderIsComming setted true");
+		ordersHorizontalQueue.add(order);	
 	}
 	public boolean getNewOrderIsComming() {
 		return newOrderIsComming;
@@ -71,8 +65,6 @@ public class HorizontalServiceServer extends Thread implements RoboterService {
 	}
 
 	public Order getCurrentOrder() {
-			System.out.println("Order entnommen");
-			newOrderIsComming=false;
 			return ordersHorizontalQueue.poll();
 	}
 	
@@ -81,8 +73,5 @@ public class HorizontalServiceServer extends Thread implements RoboterService {
 		return ordersHorizontalQueue;
 	}
 
-	public void setOrdersHorizontalQueue(Order order) {
-		this.ordersHorizontalQueue.add(order);
-	}
 	
 }
