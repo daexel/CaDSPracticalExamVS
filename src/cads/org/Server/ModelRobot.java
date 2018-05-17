@@ -41,6 +41,10 @@ public class ModelRobot extends Thread implements ICaDSEV3RobotStatusListener, I
 		grapperService = new GrapperServiceServer();
 		verticalService = new VerticalServiceServer();
 		horizontalService = new HorizontalServiceServer();
+		horizontalService.setRobot(this);
+		verticalService.setRobot(this);
+		horizontalService.start();
+		verticalService.start();
 		System.out.println("Robot initalized");
 
 	}
@@ -103,7 +107,7 @@ public class ModelRobot extends Thread implements ICaDSEV3RobotStatusListener, I
 	}
 
 	@Override
-	public void stopVertival() {
+	public void stopVertical() {
 		callerBot.stop_v();
 
 	}

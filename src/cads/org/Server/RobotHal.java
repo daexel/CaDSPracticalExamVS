@@ -21,7 +21,7 @@ public interface RobotHal {
 
 	public void moveDown();
 
-	public void stopVertival();
+	public void stopVertical();
 
 	public void stopHorizontal();
 
