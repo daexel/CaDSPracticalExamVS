@@ -5,14 +5,6 @@ package cads.org.Server;
 
 import java.util.concurrent.TimeUnit;
 
-import org.cads.ev3.middleware.CaDSEV3RobotHAL;
-import org.json.simple.JSONObject;
-
-import cads.org.Middleware.Skeleton.ResponsibiltySide;
-import cads.org.Middleware.Skeleton.RoboterFactory;
-import cads.org.Server.Services.HalFactory;
-import cads.org.Server.Services.HorizontalServiceServer;
-import cads.org.client.Feedback;
 import cads.org.client.Order;
 import cads.org.client.Service;
 
@@ -31,6 +23,8 @@ public class ServerController implements Runnable {
 	private boolean horizontalThreadStopperIsRunning;
 
 	public ServerController() {
+		this.robot = new ModelRobot();
+		this.robot.start();
 		horizontalThreadIsRunning = true;
 		verticalThreadIsRunning = true;
 		grapperThreadIsRunning = true;
@@ -48,13 +42,6 @@ public class ServerController implements Runnable {
 		HorizontalThreadStop stophori = new HorizontalThreadStop();
 		stophori.start();
 		System.out.println("HoriThreadStop gestartet");
-
-		Order order = new Order(1, 12, Service.HORIZONTAL, 90, false);
-		robot.getService(Service.HORIZONTAL).move(order);
-		TimeUnit.SECONDS.sleep(3);
-		Order order2 = new Order(1, 12, Service.HORIZONTAL, 20, false);
-
-		robot.getService(Service.HORIZONTAL).move(order2);
 	}
 
 	public void fillOrder(Order order) {
@@ -122,7 +109,7 @@ public class ServerController implements Runnable {
 				if (currentOrder != null) {
 					System.out.println(currentOrder.getValueOfMovement());
 					if ((robot.getHorizontalStatus() == currentOrder.getValueOfMovement())
-							||(robot.getHorizontalService().getNewOrderIsComming() == true)) {
+							|| (robot.getHorizontalService().getNewOrderIsComming() == true)) {
 						robot.stopHorizontal();
 
 						System.out.println("status: " + robot.getHorizontalStatus());
@@ -130,9 +117,8 @@ public class ServerController implements Runnable {
 						System.out.println("Robot gestoppt");
 
 					}
-				}
-				else {
-					System.out.println("CurrentOrder ist Null");
+				} else {
+					// System.out.println("CurrentOrder ist Null");
 
 				}
 
@@ -143,12 +129,6 @@ public class ServerController implements Runnable {
 
 	public static void main(String[] args) throws InterruptedException {
 		ServerController srv = new ServerController();
-		srv.robot = new ModelRobot();
-		srv.robot.start();
-		System.out.println("Robot gestartet");
-
-		TimeUnit.SECONDS.sleep(1);
-
 		srv.startServices();
 		while (true) {
 
