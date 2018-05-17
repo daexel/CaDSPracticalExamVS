@@ -1,8 +1,6 @@
 package cads.org.Middleware.Skeleton;
 
-
 import cads.org.client.Order;
-
 
 public interface RoboterService {
 
