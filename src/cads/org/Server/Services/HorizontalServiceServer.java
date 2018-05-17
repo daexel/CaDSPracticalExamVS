@@ -4,57 +4,48 @@
 package cads.org.Server.Services;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.TimeUnit;
-
-import org.cads.ev3.middleware.CaDSEV3RobotHAL;
-import org.cads.ev3.middleware.CaDSEV3RobotType;
-import org.cads.ev3.middleware.hal.ICaDSEV3RobotFeedBackListener;
-import org.cads.ev3.middleware.hal.ICaDSEV3RobotStatusListener;
-import org.json.simple.JSONObject;
-
+import java.util.concurrent.Semaphore;
 import cads.org.Middleware.Skeleton.RoboterService;
-import cads.org.Server.RobotHal;
+import cads.org.Server.ModelRobot;
 import cads.org.client.Order;
 
 /**
  * @author daexel
+ * 
+ * Speichert die Order in eine Queue(Threadsave)
  *
  */
-public class HorizontalServiceServer extends Thread implements RoboterService {
+public class HorizontalServiceServer implements RoboterService {
 	
 	private ConcurrentLinkedQueue<Order> ordersHorizontalQueue;
 	private boolean newOrderIsComming;
-	private boolean dogIsRunning;
-	private Order currentOrder;
-	
+	private ModelRobot robot;
+	public static Semaphore semaphoreHorizontal;
+
+
 	public HorizontalServiceServer() {
-		this.dogIsRunning= true;
 		this.newOrderIsComming=false;
 		this.ordersHorizontalQueue = new ConcurrentLinkedQueue<Order>();
+		semaphoreHorizontal = new Semaphore( 1 );
+		System.out.println("Horizontal Service initalized");
 	}
 		
-		@Override
-		public void run() {
-			while(dogIsRunning) {
-	
-				/**
-				 * Der Watchdog gibt immer die aktuelle Order in die CurrentOrder 
-				 * damit direkt reagiert werden kann 
-				 */
-				
-			}
-		}
-		
-		
-	public void stopThread() {
-		this.dogIsRunning=false;
-	}
+
 	
 	@Override
 	public void move(Order order) {
-		newOrderIsComming=true;
-		System.out.println("OrderIsComming setted true");
-		ordersHorizontalQueue.add(order);	
+		System.out.println("OrderIsComming setted true...");
+		 try {
+			 semaphoreHorizontal.acquire();
+			newOrderIsComming=true;
+			semaphoreHorizontal.release();
+			
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		 ordersHorizontalQueue.add(order);
+		 System.out.println(newOrderIsComming);
 	}
 	public boolean getNewOrderIsComming() {
 		return newOrderIsComming;
@@ -71,6 +62,14 @@ public class HorizontalServiceServer extends Thread implements RoboterService {
 	
 	public ConcurrentLinkedQueue<Order> getOrdersHorizontalQueue() {
 		return ordersHorizontalQueue;
+	}
+	
+	public ModelRobot getRobot() {
+		return robot;
+	}
+
+	public void setRobot(ModelRobot robot) {
+		this.robot = robot;
 	}
 
 	
