@@ -25,7 +25,6 @@ public class VerticalServiceServer extends Thread implements RoboterService {
 	private boolean mainThreadIsRunning;
 	private ModelRobot robot;
 	private Order currentOrder;
-	private Object stopperObject;
 	private Object receiverObject;
 	private Object incomingObject;
 	
@@ -41,7 +40,6 @@ public class VerticalServiceServer extends Thread implements RoboterService {
 		incoming = new IncomingOrderThread();
 		this.ordersQueue = new ConcurrentLinkedQueue<Order>();
 		currentOrder = null;
-		stopperObject = new Object();
 		receiverObject = new Object();
 		incomingObject = new Object();
 		System.out.println("Vertical Service initalized");
@@ -49,21 +47,19 @@ public class VerticalServiceServer extends Thread implements RoboterService {
 	
 	@Override
 	public void move(Order order) {
-		System.out.println("OrderIsComming setted true...");
 		newOrderIsComming = true;
-		synchronized(stopperObject)
+		synchronized(incomingObject)
 	      {
-	        System.out.println("stopper calls notify");
-	         stopperObject.notify();
+	        System.out.println("stopperVERTICAL calls notify");
+	         incomingObject.notify();
 	      }
 		ordersQueue.add(order);
 		
 		synchronized(receiverObject)
 	      {
-	        System.out.println("receiver calls notify");
+	        System.out.println("receiverVERTICAL calls notify");
 	         receiverObject.notify();
 	      }
-		System.out.println(newOrderIsComming);
 	}
 
 	public boolean getNewOrderIsComming() {
@@ -89,20 +85,28 @@ public class VerticalServiceServer extends Thread implements RoboterService {
 	public void setRobot(ModelRobot robot) {
 		this.robot = robot;
 	}
+	
+	public void stopService() {
+		this.mainThreadIsRunning=false;
+	}
 
 	@Override
 	public void run() {
 		receiver.start();
-		System.out.println("Receiver gestartet");
+		//System.out.println("ReceiverVertical gestartet");
 		stopper.start();
-		System.out.println("Stopper gestartet");
+		//System.out.println("StopperVertical gestartet");
 		incoming.start();
-		System.out.println("Incoming gestartet");
+		//System.out.println("IncomingVertical gestartet");
 
 		while (mainThreadIsRunning) {
 
 		}
 
+		watchdogIsRunning = false;
+		threadStopperIsRunning = false;
+		inComingIsRunning = false;
+		
 		try {
 			receiver.join();
 			stopper.join();
@@ -118,8 +122,7 @@ public class VerticalServiceServer extends Thread implements RoboterService {
 		@Override
 		public void run() {
 			while (watchdogIsRunning) {
-				if (currentOrder == null) {
-
+				if (currentOrder == null&&ordersQueue.isEmpty()) {
 					synchronized (receiverObject) {
 						try {
 							receiverObject.wait();
@@ -128,18 +131,21 @@ public class VerticalServiceServer extends Thread implements RoboterService {
 						}
 						currentOrder = ordersQueue.poll();
 					}
-				} else {
-					System.out.println("Consumer Vertical consum");
-					System.out.println("CurrentOrder aktualisiert: " + currentOrder.getValueOfMovement());
+				}
+				if (currentOrder == null&&!ordersQueue.isEmpty()){
+					currentOrder =ordersQueue.poll();
+				}
+				else {
+//					System.out.println("Consumer Vertical consum");
+//					System.out.println("CurrentOrder Vertical aktualisiert: " + currentOrder.getValueOfMovement());
 					if (robot.getVerticalStatus() < currentOrder.getValueOfMovement()) {
 						System.out.println("Order empfangen UP");
-						robot.moveUp();
+						robot.getHAL().moveUp();
 					} else {
 						System.out.println("Order empfangen DOWN");
-						robot.moveDown();
+						robot.getHAL().moveDown();
 					}
 				}
-
 			}
 		}
 	};
@@ -152,9 +158,10 @@ public class VerticalServiceServer extends Thread implements RoboterService {
 				 * Horizontale Position ist erreicht worden
 				 */
 				if (currentOrder != null) {
-					if (robot.getVerticalStatus() == currentOrder.getValueOfMovement()) {
-						robot.stopVertical();
-						System.out.println("Robot stopped finished");
+					//System.out.println("Status: "+robot.getVerticalStatus()+"\nValue: "+currentOrder.getValueOfMovement());
+					if (robot.getVerticalStatus()==currentOrder.getValueOfMovement()) {
+						robot.getHAL().stop_v();
+						System.out.println("Vertical stopped finished");
 						currentOrder = null;
 
 					}
@@ -181,8 +188,8 @@ public class VerticalServiceServer extends Thread implements RoboterService {
 						}
 					}
 				} else {
-					robot.stopVertical();
-					System.out.println("Robot stopped because NEW ORDER");
+					robot.getHAL().stop_v();;
+					System.out.println("Vertical stopped because NEW ORDER");
 					newOrderIsComming=false;
 				}
 			}

@@ -13,7 +13,7 @@ import cads.org.client.Service;
  * Diese Klasse representiert den Controller im MVC Pattern
  *
  */
-public class ServerController implements Runnable {
+public class ServerController {
 	private ModelRobot robot;
 
 
@@ -30,49 +30,31 @@ public class ServerController implements Runnable {
 		this.robot = robot;
 	}
 
-	@Override
-	public void run() {
-		
-		/**
-		 * Hier werden die jeweiligen Services gestartet oder unterbrochen, wenn /*der
-		 * Roboter die richtige Stellung erreicht hat
-		 **/
-
-	}
-
-	/**
-	 * 
-	 * @author daexel
-	 *
-	 *         Thread to move the Robot Left or Right need Feedback
-	 */
-
-	
-
-
 	public static void main(String[] args) throws InterruptedException {
+
 		ServerController srv = new ServerController();
-		
 		srv.getRobot().start();
-		
+		//Warten bis alles Initialisiert ist.
 		TimeUnit.SECONDS.sleep(2);
 		Order order = new Order(1, 12, Service.HORIZONTAL, 19, false);
 		srv.getRobot().getService(Service.HORIZONTAL).move(order);
-		TimeUnit.SECONDS.sleep(2);
-		Order order2 = new Order(1, 12, Service.VERTICAL, 50, false);
+		Order order2 = new Order(1, 12, Service.VERTICAL, 91, false);
 		srv.getRobot().getService(Service.VERTICAL).move(order2);
-		TimeUnit.SECONDS.sleep(2);
-		Order order3 = new Order(1, 12, Service.HORIZONTAL, 70, false);
-		srv.getRobot().getService(Service.HORIZONTAL).move(order3);
-		TimeUnit.SECONDS.sleep(4);
-		Order order4 = new Order(1, 12, Service.HORIZONTAL, 10, false);
-		srv.getRobot().getService(Service.HORIZONTAL).move(order4);
+		Order grap = new Order(1, 12, Service.GRABBER, 0, true);
+		srv.getRobot().getService(Service.GRABBER).move(grap);
 		TimeUnit.SECONDS.sleep(3);
-		Order order5 = new Order(1, 12, Service.HORIZONTAL, 90, false);
+		//Order estop = new Order(1,12,Service.ESTOP,0,false);
+		//srv.getRobot().getService(Service.ESTOP).move(estop);
+		Order order3 = new Order(1, 12, Service.HORIZONTAL, 80, false);
+		srv.getRobot().getService(Service.HORIZONTAL).move(order3);
+		Order grap2 = new Order(1, 12, Service.GRABBER, 0, true);
+		srv.getRobot().getService(Service.GRABBER).move(grap2);
+		Order order4 = new Order(1, 12, Service.VERTICAL, 10, false);
+		srv.getRobot().getService(Service.VERTICAL).move(order4);
+		TimeUnit.SECONDS.sleep(2);
+		Order order5 = new Order(1, 12, Service.HORIZONTAL, 5, false);
 		srv.getRobot().getService(Service.HORIZONTAL).move(order5);
+		srv.getRobot().stopRobot();
 
-		while (true) {
-
-		}
 	}
 }

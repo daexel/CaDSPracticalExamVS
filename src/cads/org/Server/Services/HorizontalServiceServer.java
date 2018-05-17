@@ -26,7 +26,6 @@ public class HorizontalServiceServer extends Thread implements RoboterService {
 	private boolean mainThreadIsRunning;
 	private ModelRobot robot;
 	private Order currentOrder;
-	private Object stopperObject;
 	private Object receiverObject;
 	private Object incomingObject;
 
@@ -41,7 +40,6 @@ public class HorizontalServiceServer extends Thread implements RoboterService {
 		incoming = new IncomingOrderThread();
 		this.ordersQueue = new ConcurrentLinkedQueue<Order>();
 		currentOrder = null;
-		stopperObject = new Object();
 		receiverObject = new Object();
 		incomingObject = new Object();
 		System.out.println("Horizontal Service initalized");
@@ -50,21 +48,19 @@ public class HorizontalServiceServer extends Thread implements RoboterService {
 
 	@Override
 	public void move(Order order) {
-		System.out.println("OrderIsComming setted true...");
 		newOrderIsComming = true;
-		synchronized(stopperObject)
+		synchronized(incomingObject)
 	      {
-	        System.out.println("stopper calls notify");
-	         stopperObject.notify();
+	        System.out.println("Horizontal stopper calls notify");
+	         incomingObject.notify();
 	      }
 		ordersQueue.add(order);
 		
 		synchronized(receiverObject)
 	      {
-	        System.out.println("receiver calls notify");
+	        System.out.println("Horizontal receiver calls notify");
 	         receiverObject.notify();
 	      }
-		System.out.println(newOrderIsComming);
 	}
 
 	public boolean getNewOrderIsComming() {
@@ -90,26 +86,33 @@ public class HorizontalServiceServer extends Thread implements RoboterService {
 	public void setRobot(ModelRobot robot) {
 		this.robot = robot;
 	}
+	
+	public void stopService() {
+		this.mainThreadIsRunning=false;
+	}
 
 	@Override
 	public void run() {
 		receiver.start();
-		System.out.println("Receiver gestartet");
+		//System.out.println("Receiver gestartet");
 		stopper.start();
-		System.out.println("Stopper gestartet");
+		//System.out.println("Stopper gestartet");
 		incoming.start();
-		System.out.println("Incoming gestartet");
+		//System.out.println("Incoming gestartet");
 
 		while (mainThreadIsRunning) {
 
 		}
+		watchdogIsRunning = false;
+		threadStopperIsRunning = false;
+		inComingIsRunning = false;
+		
 
 		try {
 			receiver.join();
 			stopper.join();
 			incoming.join();
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -119,7 +122,7 @@ public class HorizontalServiceServer extends Thread implements RoboterService {
 		@Override
 		public void run() {
 			while (watchdogIsRunning) {
-				if (currentOrder == null) {
+				if (currentOrder == null&&ordersQueue.isEmpty()) {
 
 					synchronized (receiverObject) {
 						try {
@@ -129,15 +132,18 @@ public class HorizontalServiceServer extends Thread implements RoboterService {
 						}
 						currentOrder = ordersQueue.poll();
 					}
-				} else {
-					System.out.println("Consumer consum");
-					System.out.println("CurrentOrder aktualisiert: " + currentOrder.getValueOfMovement());
+				} 
+				if (currentOrder == null&&!ordersQueue.isEmpty()){
+					currentOrder =ordersQueue.poll();
+				}else {
+//					System.out.println("Consumer Horizontal consum");
+//					System.out.println("CurrentOrder Horizontal aktualisiert: " + currentOrder.getValueOfMovement());
 					if (robot.getHorizontalStatus() < currentOrder.getValueOfMovement()) {
 						System.out.println("Order empfangen Links");
-						robot.moveLeft();
+						robot.getHAL().moveLeft();
 					} else {
 						System.out.println("Order empfangen Rechts");
-						robot.moveRight();
+						robot.getHAL().moveRight();
 					}
 				}
 
@@ -154,8 +160,8 @@ public class HorizontalServiceServer extends Thread implements RoboterService {
 				 */
 				if (currentOrder != null) {
 					if (robot.getHorizontalStatus() == currentOrder.getValueOfMovement()) {
-						robot.stopHorizontal();
-						System.out.println("Robot stopped finished");
+						robot.getHAL().stop_h();
+						System.out.println("Horizontal stopped finished");
 						currentOrder = null;
 
 					}
@@ -182,8 +188,8 @@ public class HorizontalServiceServer extends Thread implements RoboterService {
 						}
 					}
 				} else {
-					robot.stopHorizontal();
-					System.out.println("Robot stopped because NEW ORDER");
+					robot.getHAL().stop_h();;
+					System.out.println("Horizontal stopped because NEW ORDER");
 					newOrderIsComming=false;
 				}
 			}
