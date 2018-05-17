@@ -43,7 +43,7 @@ public class ServerController implements Runnable {
 
 	public void startServices() throws InterruptedException {
 		System.out.println("ServerController laeuft!");
-		//this.robot.getHorizontalService().start();
+		// this.robot.getHorizontalService().start();
 		System.out.println("Horizontal-Service gestartet");
 		// this.robot.getVerticalService().start();
 		System.out.println("Vertical-Service gestartet");
@@ -68,7 +68,6 @@ public class ServerController implements Runnable {
 		HorizontalThread hori = new HorizontalThread();
 		hori.start();
 		System.out.println("HoriThread gestartet");
-		
 
 		/**
 		 * Hier werden die jeweiligen Services gestartet oder unterbrochen, wenn /*der
@@ -94,24 +93,20 @@ public class ServerController implements Runnable {
 
 	public void move() throws InterruptedException {
 		while (true) {
-			this.currentOrder = robot.getHorizontalService().getCurrentOrder();
-			if(this.currentOrder!=null) {
-			System.out.println("Consumer consum");
-			System.out.println("CurrentOrder aktualisiert");
-			System.out.println("ValueOfMovement: " + currentOrder.getValueOfMovement());
-			if (robot.getHorizontalStatus() < currentOrder.getValueOfMovement()) {
-				System.out.println("Order empfangen Links");
-				robot.moveLeft();
-			} else {
-				System.out.println("Order empfangen Rechts");
-				robot.moveRight();
+			currentOrder = robot.getHorizontalService().getCurrentOrder();
+			if (currentOrder != null) {
+				System.out.println("Consumer consum");
+				System.out.println("CurrentOrder aktualisiert: "+currentOrder.getValueOfMovement());
+				if (robot.getHorizontalStatus() < currentOrder.getValueOfMovement()) {
+					System.out.println("Order empfangen Links");
+					robot.moveLeft();
+				} else {
+					System.out.println("Order empfangen Rechts");
+					robot.moveRight();
+				}
 			}
-			}
-			
-
 		}
 	}
-
 
 	public class HorizontalThread extends Thread {
 
@@ -135,32 +130,36 @@ public class ServerController implements Runnable {
 		@Override
 		public void run() {
 			while (horizontalThreadStopperIsRunning) {
-				try {
-					this.sleep(10);
-				} catch (InterruptedException e) {
-					// Warum muss der Thread hier schlafen????
-					e.printStackTrace();
-				}
+				 try {
+				 this.sleep(100);
+				 } catch (InterruptedException e) {
+				 // Warum muss der Thread hier schlafen????
+				 e.printStackTrace();
+				 }
+				/**
+				 * Neue Order wurde empfangen
+				 */
 				if (robot.getHorizontalService().getNewOrderIsComming() == true) {
 					robot.stopHorizontal();
 					System.out.println("Robot stopped source bool");
 					robot.getHorizontalService().setNewOrderIsComming(false);
 				}
-				if(currentOrder!=null) {
-					if(robot.getHorizontalStatus()==currentOrder.getValueOfMovement()) {
+				if (currentOrder != null) {
+					if (robot.getHorizontalStatus() == currentOrder.getValueOfMovement()) {
 						robot.stopHorizontal();
 						System.out.println("Robot stopped finished");
 					}
-					
+
 				}
-				
+
 			}
 		}
-};
+	};
 
 	public static void main(String[] args) throws InterruptedException {
 		ServerController srv = new ServerController();
 		srv.run();
+		TimeUnit.SECONDS.sleep(2);
 		Order order = new Order(1, 12, Service.HORIZONTAL, 90, false);
 		srv.getRobot().getService(Service.HORIZONTAL).move(order);
 		TimeUnit.SECONDS.sleep(6);
