@@ -14,21 +14,21 @@ import cads.org.client.Order;
 import cads.org.client.Service;
 
 public class Test {
-	// What???????????????????
-	public static void main(String[] args) {
-
-		ServiceOrderReceiver estop = new VerticalReceiver(1340);
-		ServiceOrderReceiver vertical = new VerticalReceiver(1337);
-		ServiceOrderReceiver horizontal = new HorizontalReceiver(1338);
-		ServiceOrderReceiver grabber = new HorizontalReceiver(1340);
-		RoboterFactory.getService(Service.VERTICAL, ResponsibiltySide.CLIENT)
-				.move(new Order(1, 1, Service.VERTICAL, 24, false));
-		RoboterFactory.getService(Service.GRABBER, ResponsibiltySide.CLIENT)
-				.move(new Order(1, 1, Service.GRABBER, 24, false));
-		RoboterFactory.getService(Service.HORIZONTAL, ResponsibiltySide.CLIENT)
-				.move(new Order(1, 1, Service.HORIZONTAL, 34, false));
-		RoboterFactory.getService(Service.ESTOP, ResponsibiltySide.CLIENT)
-				.move(new Order(1, 1, Service.ESTOP, 24, false));
-
-	}
+		// What???????????????????
+		public static void main(String[] args) {
+	
+				ServiceOrderReceiver estop = new VerticalReceiver(1340);
+				ServiceOrderReceiver vertical = new VerticalReceiver(1337);
+				ServiceOrderReceiver horizontal = new HorizontalReceiver(1338);
+				ServiceOrderReceiver grabber = new HorizontalReceiver(1340);
+				RoboterFactory.getService(Service.VERTICAL, ResponsibiltySide.CLIENT)
+								.move(new Order(1, 1, Service.VERTICAL, 24, false));
+				RoboterFactory.getService(Service.GRABBER, ResponsibiltySide.CLIENT)
+								.move(new Order(1, 1, Service.GRABBER, 24, false));
+				RoboterFactory.getService(Service.HORIZONTAL, ResponsibiltySide.CLIENT)
+								.move(new Order(1, 1, Service.HORIZONTAL, 34, false));
+				RoboterFactory.getService(Service.ESTOP, ResponsibiltySide.CLIENT)
+								.move(new Order(1, 1, Service.ESTOP, 24, false));
+	
+		}
 }
