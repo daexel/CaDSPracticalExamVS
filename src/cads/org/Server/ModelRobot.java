@@ -2,35 +2,23 @@
  * 
  */
 package cads.org.Server;
-
-import static org.junit.Assert.fail;
-
-import java.io.Console;
-import java.util.Scanner;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.TimeUnit;
-
 import org.cads.ev3.middleware.CaDSEV3RobotHAL;
 import org.cads.ev3.middleware.CaDSEV3RobotType;
 import org.cads.ev3.middleware.hal.ICaDSEV3RobotFeedBackListener;
 import org.cads.ev3.middleware.hal.ICaDSEV3RobotStatusListener;
 import org.json.simple.JSONObject;
-
 import cads.org.Middleware.Skeleton.RoboterService;
-import cads.org.Middleware.Stub.EstopServiceStub;
-import cads.org.Middleware.Stub.GrabberServiceStub;
-import cads.org.Middleware.Stub.HorizontalServiceStub;
 import cads.org.Server.Services.EstopServiceServer;
 import cads.org.Server.Services.GrapperServiceServer;
 import cads.org.Server.Services.HorizontalServiceServer;
 import cads.org.Server.Services.VerticalServiceServer;
-import cads.org.client.Feedback;
-import cads.org.client.Order;
 import cads.org.client.Service;
-import cads.parser.generated.Rob_Test;
+
 
 /**
  * @author daexel
+ * 
+ * Repräsentiert die Services in der Gesamtheit. Der Robot initalisiert alle Services.
  *
  */
 
@@ -40,13 +28,29 @@ public class ModelRobot extends Thread implements ICaDSEV3RobotStatusListener, I
 	private GrapperServiceServer grapperService;
 	private HorizontalServiceServer horizontalService;
 	private VerticalServiceServer verticalService;
-
 	private JSONObject statusGripper;
 	private JSONObject statusHorizontal;
 	private JSONObject statusVertical;
-
 	private static CaDSEV3RobotHAL callerBot = null;
-	private boolean mainThreadIsRunning = true;
+	
+	public ModelRobot() {
+		callerBot = CaDSEV3RobotHAL.createInstance(CaDSEV3RobotType.SIMULATION, this, this);
+		estopService = new EstopServiceServer();
+		grapperService = new GrapperServiceServer();
+		verticalService = new VerticalServiceServer();
+		horizontalService = new HorizontalServiceServer();
+		horizontalService.setRobot(this);
+		verticalService.setRobot(this);
+		grapperService.setRobot(this);
+		estopService.setRobot(this);
+		horizontalService.start();
+		verticalService.start();
+		grapperService.start();
+		estopService.start();
+		System.out.println("Robot initalized");
+
+	}
+
 
 	public RoboterService getService(Service serviceType) {
 		if (serviceType == Service.GRABBER) {
@@ -57,21 +61,12 @@ public class ModelRobot extends Thread implements ICaDSEV3RobotStatusListener, I
 			return horizontalService;
 		} else if (serviceType == Service.ESTOP) {
 			return estopService;
-		} else {
+		} 
 			return null;
-		}
-
+		
 	}
 
-	public ModelRobot() {
-		callerBot = CaDSEV3RobotHAL.createInstance(CaDSEV3RobotType.SIMULATION, this, this);
-		estopService = new EstopServiceServer();
-		grapperService = new GrapperServiceServer();
-		verticalService = new VerticalServiceServer();
-		horizontalService = new HorizontalServiceServer();
-
-	}
-
+	
 	@Override
 	public synchronized void giveFeedbackByJSonTo(JSONObject feedback) {
 
@@ -91,47 +86,6 @@ public class ModelRobot extends Thread implements ICaDSEV3RobotStatusListener, I
 
 	}
 
-	@Override
-	public void run() {
-		while (mainThreadIsRunning) {
-			// System.out.println("RobotMainThread lï¿½uft");
-
-		}
-
-	}
-
-	@Override
-	public void moveLeft() {
-		callerBot.moveLeft();
-	}
-
-	@Override
-	public void moveRight() {
-		callerBot.moveRight();
-	}
-
-	@Override
-	public void moveUp() {
-		callerBot.moveUp();
-	}
-
-	@Override
-	public void moveDown() {
-		callerBot.moveDown();
-
-	}
-
-	@Override
-	public void stopVertival() {
-		callerBot.stop_v();
-
-	}
-
-	@Override
-	public void stopHorizontal() {
-		callerBot.stop_h();
-
-	}
 
 	@Override
 	public long getHorizontalStatus() {
@@ -154,9 +108,9 @@ public class ModelRobot extends Thread implements ICaDSEV3RobotStatusListener, I
 	@Override
 	public boolean getGrapperStatus() {
 		if (statusGripper.get("value") == "open") {
-			return true;
-		} else {
 			return false;
+		} else {
+			return true;
 		}
 	}
 
@@ -164,6 +118,14 @@ public class ModelRobot extends Thread implements ICaDSEV3RobotStatusListener, I
 	public void stopRobotFeedback() {
 		callerBot.teardown();
 
+	}
+	
+	public void stopRobot() {
+		//estopService.stopService();
+		grapperService.stopService();
+		verticalService.stopService();
+		horizontalService.stopService();
+		callerBot.doClose();
 	}
 
 	public EstopServiceServer getEstopService() {
@@ -186,11 +148,11 @@ public class ModelRobot extends Thread implements ICaDSEV3RobotStatusListener, I
 		return horizontalService;
 	}
 
-	public static CaDSEV3RobotHAL getCallerBot() {
+	public CaDSEV3RobotHAL getHAL() {
 		return callerBot;
 	}
 
-	public static void setCallerBot(CaDSEV3RobotHAL callerBot) {
+	public void setCallerBot(CaDSEV3RobotHAL callerBot) {
 		ModelRobot.callerBot = callerBot;
 	}
 
