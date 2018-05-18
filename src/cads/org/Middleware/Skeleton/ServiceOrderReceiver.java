@@ -6,17 +6,19 @@ import java.net.DatagramSocket;
 import java.net.SocketException;
 
 import cads.org.Server.ModelRobot;
+import cads.org.Server.ServerController;
 import cads.org.client.Order;
 
 public abstract class ServiceOrderReceiver {
 	private DatagramSocket sock;
 	private int p;
-
 	private Order o;
 	private ModelRobot robot;
+	private ServerController srv;
 
 
-	public ServiceOrderReceiver(int port) {
+	public ServiceOrderReceiver(int port, ServerController srv) {
+		this.srv = srv;
 		p = port;
 		try {
 			sock = new DatagramSocket(p);
@@ -25,6 +27,10 @@ public abstract class ServiceOrderReceiver {
 			e.printStackTrace();
 		}
 		t.start();
+	}
+	
+	public ServerController getServerController() {
+		return srv;
 	}
 
 	private Thread t = new Thread(new Runnable() {
@@ -36,9 +42,11 @@ public abstract class ServiceOrderReceiver {
 			DatagramPacket r = new DatagramPacket(buf, bufMaxLength);
 
 			try {
+				while(true) {
 				sock.receive(r);
 				byte[] duf = r.getData();
 				useService(Order.parseReceivedMessage(r.getData()));
+				}
 
 			} catch (IOException e) {
 				e.printStackTrace();

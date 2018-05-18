@@ -23,6 +23,7 @@ public class VerticalServiceStub implements cads.org.Middleware.Skeleton.Roboter
 		try {
 			p = new DatagramPacket(b, b.length, InetAddress.getLocalHost(), port);
 			serverSocket.send(p);
+			//System.out.println("Message send");
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -64,9 +64,9 @@ public class Order {
 		jasonOrder.put("RobotNumber", order.getRoboterID());
 		jasonOrder.put("Service", order.getService().ordinal());
 		jasonOrder.put("Value", order.getValueOfMovement());
-		if (order.getGrabState() == true) {
+		if (order.getIsOpen() == true) {
 			jasonOrder.put("Grapperbool", 1);
-		} else {
+		} else if(order.getIsOpen() == false) {
 			jasonOrder.put("Grapperbool", 0);
 		}
 
@@ -131,9 +131,10 @@ public class Order {
 		if ((long) json.get("Service") == Service.ESTOP.ordinal()) {
 			serviceReceived = Service.ESTOP;
 		}
-		boolean isOpen = true;
-		if (Boolean.parseBoolean(json.get("Grapperbool").toString()) != true) {
-			isOpen = false;
+		boolean isOpen = false;
+		System.out.println(json.get("Grapperbool").toString());
+		if (json.get("Grapperbool").toString().equals("1")) {
+			isOpen = true;
 		}
 		receivedOrder = new Order(Integer.parseInt(json.get("TID").toString()),
 				Integer.parseInt(json.get("RobotNumber").toString()), serviceReceived,

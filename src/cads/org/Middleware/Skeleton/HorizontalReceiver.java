@@ -1,21 +1,21 @@
 package cads.org.Middleware.Skeleton;
 
+import cads.org.Server.ServerController;
 import cads.org.Server.Services.HalFactory;
 import cads.org.client.Order;
 import cads.org.client.Service;
 
 public class HorizontalReceiver extends ServiceOrderReceiver {
 
-	public HorizontalReceiver(int port) {
-		super(port);
+	public HorizontalReceiver(int port, ServerController srv) {
+		super(port, srv);
 		// TODO Auto-generated constructor stub
 	}
 
 	@Override
 	public void useService(Order order) {
 
-		RoboterFactory.getService(Service.HORIZONTAL, ResponsibiltySide.SERVER).move(order);
-		HalFactory.getService(Service.HORIZONTAL).move(order);
+		super.getServerController().getRobot().getService(Service.HORIZONTAL).move(order);
 
 	}
 
