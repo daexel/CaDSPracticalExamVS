@@ -38,7 +38,6 @@ public class HorizontalServiceServer extends Thread implements RoboterService {
 		this.inComingIsRunning = true;
 		this.mainThreadIsRunning = true;
 		receiver = new ReceiverThread();
-		stopper = new StopperThread();
 		incoming = new IncomingOrderThread();
 		this.ordersQueue = new ConcurrentLinkedQueue<Order>();
 		currentOrder = null;
@@ -51,7 +50,7 @@ public class HorizontalServiceServer extends Thread implements RoboterService {
 	public void move(Order order) {
 		newOrderIsComming = true;
 		synchronized (incomingObject) {
-			System.out.println("Horizontal stopper calls notify");
+			System.out.println("Horizontal incoming calls notify");
 			incomingObject.notify();
 		}
 		ordersQueue.add(order);
@@ -94,8 +93,6 @@ public class HorizontalServiceServer extends Thread implements RoboterService {
 	public void run() {
 		receiver.start();
 		// System.out.println("Receiver gestartet");
-		stopper.start();
-		// System.out.println("Stopper gestartet");
 		incoming.start();
 		// System.out.println("Incoming gestartet");
 
@@ -120,30 +117,30 @@ public class HorizontalServiceServer extends Thread implements RoboterService {
 		@Override
 		public void run() {
 			while (watchdogIsRunning) {
-				if (currentOrder == null && ordersQueue.isEmpty()) {
-
+				if (ordersQueue.isEmpty()) {
 					synchronized (receiverObject) {
 						try {
 							receiverObject.wait();
 						} catch (InterruptedException e) {
 							e.printStackTrace();
 						}
-						currentOrder = ordersQueue.poll();
 					}
 				}
-				if (currentOrder == null && !ordersQueue.isEmpty()) {
-					currentOrder = ordersQueue.poll();
-				} else {
-					// System.out.println("Consumer Horizontal consum");
-					// System.out.println("CurrentOrder Horizontal aktualisiert: " +
-					// currentOrder.getValueOfMovement());
-					if (robot.getHorizontalStatus() < currentOrder.getValueOfMovement()) {
-						System.out.println("Order empfangen Links");
-						robot.getHAL().moveLeft();
-					} else {
-						System.out.println("Order empfangen Rechts");
-						robot.getHAL().moveRight();
-					}
+				currentOrder = ordersQueue.poll();
+				threadStopperIsRunning = true;
+				StopperThread stopper = new StopperThread();
+				stopper.start();
+
+				// System.out.println("Consumer Horizontal consum");
+				// System.out.println("CurrentOrder Horizontal aktualisiert: " +
+				// currentOrder.getValueOfMovement());
+				if (robot.getHorizontalStatus() < currentOrder.getValueOfMovement()) {
+					System.out.println("Order empfangen Links");
+					robot.getHAL().moveLeft();
+				}
+				if (robot.getHorizontalStatus() > currentOrder.getValueOfMovement()) {
+					System.out.println("Order empfangen Rechts");
+					robot.getHAL().moveRight();
 				}
 
 			}
@@ -157,13 +154,13 @@ public class HorizontalServiceServer extends Thread implements RoboterService {
 				/**
 				 * Horizontale Position ist erreicht worden
 				 */
-				if (currentOrder != null) {
-					if (robot.getHorizontalStatus() == currentOrder.getValueOfMovement()) {
-						robot.getHAL().stop_h();
-						System.out.println("Horizontal stopped finished");
-						currentOrder = null;
+				System.out.println(robot.getHorizontalStatus());
+				System.out.println(currentOrder.getValueOfMovement());
+				if (robot.getHorizontalStatus() == currentOrder.getValueOfMovement()) {
+					robot.getHAL().stop_h();
+					System.out.println("Horizontal stopped finished");
+					threadStopperIsRunning = false;
 
-					}
 				}
 
 			}
@@ -178,20 +175,18 @@ public class HorizontalServiceServer extends Thread implements RoboterService {
 				/**
 				 * Neue Order wurde zwischenzeitlich empfangen
 				 */
-				if (newOrderIsComming != true) {
-					synchronized (incomingObject) {
-						try {
-							incomingObject.wait();
-						} catch (InterruptedException e) {
-							e.printStackTrace();
-						}
+
+				synchronized (incomingObject) {
+					try {
+						incomingObject.wait();
+						threadStopperIsRunning = false;
+						robot.getHAL().stop_h();
+
+					} catch (InterruptedException e) {
+						e.printStackTrace();
 					}
-				} else {
-					robot.getHAL().stop_h();
-					;
-					System.out.println("Horizontal stopped because NEW ORDER");
-					newOrderIsComming = false;
 				}
+
 			}
 		}
 	};

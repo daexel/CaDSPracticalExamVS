@@ -91,7 +91,6 @@ public class GrapperServiceServer extends Thread implements RoboterService {
 							e.printStackTrace();
 						}
 						currentOrder = ordersQueue.poll();
-						System.out.println("Gepollt");
 					}
 				}
 				if (currentOrder == null && !ordersQueue.isEmpty()) {

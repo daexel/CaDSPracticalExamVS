@@ -15,7 +15,6 @@ import cads.org.client.Order;
  */
 public class VerticalServiceServer extends Thread implements RoboterService {
 	private ReceiverThread receiver;
-	private StopperThread stopper;
 	private IncomingOrderThread incoming;
 	private ConcurrentLinkedQueue<Order> ordersQueue;
 	private boolean newOrderIsComming;
@@ -27,8 +26,7 @@ public class VerticalServiceServer extends Thread implements RoboterService {
 	private Order currentOrder;
 	private Object receiverObject;
 	private Object incomingObject;
-	
-	
+
 	public VerticalServiceServer() {
 		this.newOrderIsComming = false;
 		this.watchdogIsRunning = true;
@@ -36,7 +34,6 @@ public class VerticalServiceServer extends Thread implements RoboterService {
 		this.inComingIsRunning = true;
 		this.mainThreadIsRunning = true;
 		receiver = new ReceiverThread();
-		stopper = new StopperThread();
 		incoming = new IncomingOrderThread();
 		this.ordersQueue = new ConcurrentLinkedQueue<Order>();
 		currentOrder = null;
@@ -44,22 +41,20 @@ public class VerticalServiceServer extends Thread implements RoboterService {
 		incomingObject = new Object();
 		System.out.println("Vertical Service initalized");
 	}
-	
+
 	@Override
 	public void move(Order order) {
 		newOrderIsComming = true;
-		synchronized(incomingObject)
-	      {
-	        System.out.println("stopperVERTICAL calls notify");
-	         incomingObject.notify();
-	      }
+		synchronized (incomingObject) {
+			System.out.println("Horizontal incoming calls notify");
+			incomingObject.notify();
+		}
 		ordersQueue.add(order);
-		
-		synchronized(receiverObject)
-	      {
-	        System.out.println("receiverVERTICAL calls notify");
-	         receiverObject.notify();
-	      }
+
+		synchronized (receiverObject) {
+			System.out.println("Horizontal receiver calls notify");
+			receiverObject.notify();
+		}
 	}
 
 	public boolean getNewOrderIsComming() {
@@ -85,19 +80,17 @@ public class VerticalServiceServer extends Thread implements RoboterService {
 	public void setRobot(ModelRobot robot) {
 		this.robot = robot;
 	}
-	
+
 	public void stopService() {
-		this.mainThreadIsRunning=false;
+		this.mainThreadIsRunning = false;
 	}
 
 	@Override
 	public void run() {
 		receiver.start();
-		//System.out.println("ReceiverVertical gestartet");
-		stopper.start();
-		//System.out.println("StopperVertical gestartet");
+		// System.out.println("ReceiverVertical gestartet");
 		incoming.start();
-		//System.out.println("IncomingVertical gestartet");
+		// System.out.println("IncomingVertical gestartet");
 
 		while (mainThreadIsRunning) {
 
@@ -106,10 +99,9 @@ public class VerticalServiceServer extends Thread implements RoboterService {
 		watchdogIsRunning = false;
 		threadStopperIsRunning = false;
 		inComingIsRunning = false;
-		
+
 		try {
 			receiver.join();
-			stopper.join();
 			incoming.join();
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
@@ -122,30 +114,32 @@ public class VerticalServiceServer extends Thread implements RoboterService {
 		@Override
 		public void run() {
 			while (watchdogIsRunning) {
-				if (currentOrder == null&&ordersQueue.isEmpty()) {
+				if (ordersQueue.isEmpty()) {
 					synchronized (receiverObject) {
 						try {
 							receiverObject.wait();
 						} catch (InterruptedException e) {
 							e.printStackTrace();
 						}
-						currentOrder = ordersQueue.poll();
 					}
 				}
-				if (currentOrder == null&&!ordersQueue.isEmpty()){
-					currentOrder =ordersQueue.poll();
+				currentOrder = ordersQueue.poll();
+				threadStopperIsRunning = true;
+				StopperThread stopper = new StopperThread();
+				stopper.start();
+
+				// System.out.println("Consumer Horizontal consum");
+				// System.out.println("CurrentOrder Horizontal aktualisiert: " +
+				// currentOrder.getValueOfMovement());
+				if (robot.getVerticalStatus() < currentOrder.getValueOfMovement()) {
+					System.out.println("Order empfangen Links");
+					robot.getHAL().moveUp();
 				}
-				else {
-//					System.out.println("Consumer Vertical consum");
-//					System.out.println("CurrentOrder Vertical aktualisiert: " + currentOrder.getValueOfMovement());
-					if (robot.getVerticalStatus() < currentOrder.getValueOfMovement()) {
-						System.out.println("Order empfangen UP");
-						robot.getHAL().moveUp();
-					} else {
-						System.out.println("Order empfangen DOWN");
-						robot.getHAL().moveDown();
-					}
+				if (robot.getVerticalStatus() > currentOrder.getValueOfMovement()) {
+					System.out.println("Order empfangen Rechts");
+					robot.getHAL().moveDown();
 				}
+
 			}
 		}
 	};
@@ -157,14 +151,13 @@ public class VerticalServiceServer extends Thread implements RoboterService {
 				/**
 				 * Horizontale Position ist erreicht worden
 				 */
-				if (currentOrder != null) {
-					//System.out.println("Status: "+robot.getVerticalStatus()+"\nValue: "+currentOrder.getValueOfMovement());
-					if (robot.getVerticalStatus()==currentOrder.getValueOfMovement()) {
-						robot.getHAL().stop_v();
-						System.out.println("Vertical stopped finished");
-						currentOrder = null;
+				System.out.println(robot.getVerticalStatus());
+				System.out.println(currentOrder.getValueOfMovement());
+				if (robot.getVerticalStatus() == currentOrder.getValueOfMovement()) {
+					robot.getHAL().stop_v();
+					System.out.println("Horizontal stopped finished");
+					threadStopperIsRunning = false;
 
-					}
 				}
 
 			}
@@ -179,19 +172,18 @@ public class VerticalServiceServer extends Thread implements RoboterService {
 				/**
 				 * Neue Order wurde zwischenzeitlich empfangen
 				 */
-				if (newOrderIsComming != true) {
-					synchronized (incomingObject) {
-						try {
-							incomingObject.wait();
-						} catch (InterruptedException e) {
-							e.printStackTrace();
-						}
+
+				synchronized (incomingObject) {
+					try {
+						incomingObject.wait();
+						threadStopperIsRunning = false;
+						robot.getHAL().stop_v();
+
+					} catch (InterruptedException e) {
+						e.printStackTrace();
 					}
-				} else {
-					robot.getHAL().stop_v();;
-					System.out.println("Vertical stopped because NEW ORDER");
-					newOrderIsComming=false;
 				}
+
 			}
 		}
 	};
