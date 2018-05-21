@@ -36,9 +36,12 @@ public class ModelRobot extends Thread implements ICaDSEV3RobotStatusListener, I
 	private JSONObject statusHorizontal;
 	private JSONObject statusVertical;
 	private static CaDSEV3RobotHAL callerBot = null;
-	private FeedbackStub fs = new FeedbackStub();
+	//private FeedbackStub fs = new FeedbackStub();
 	
 	public ModelRobot() {
+		statusGripper = new JSONObject();
+		statusHorizontal = new JSONObject();
+		statusVertical = new JSONObject();
 		callerBot = CaDSEV3RobotHAL.createInstance(CaDSEV3RobotType.SIMULATION, this, this);
 		estopService = new EstopServiceServer();
 		grapperService = new GrapperServiceServer();
@@ -79,7 +82,16 @@ public class ModelRobot extends Thread implements ICaDSEV3RobotStatusListener, I
 
 	@Override
 	public synchronized void onStatusMessage(JSONObject status) {
-		fs.send(status);
+		//fs.send(status);
+		if (status.get("state") == "gripper") {
+						this.statusGripper = status;
+					}
+					if (status.get("state") == "horizontal") {
+						this.statusHorizontal = status;
+					}
+					if (status.get("state") == "vertical") {
+						this.statusVertical = status;
+					}
 	}
 
 

@@ -19,34 +19,34 @@ public class Test {
 		ServiceOrderReceiver grab = new GrabberReceiver(1339, c);
 
 
-		try {
-			Thread.sleep(2000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		RoboterFactory.getService(Service.GRABBER, ResponsibiltySide.CLIENT)
-				.move(new Order(0, 0, Service.GRABBER, 0, true));
-		
-		RoboterFactory.getService(Service.HORIZONTAL, ResponsibiltySide.CLIENT)
-				.move(new Order(0, 0, Service.HORIZONTAL, 100, true));
-
-		RoboterFactory.getService(Service.VERTICAL, ResponsibiltySide.CLIENT)
-				.move(new Order(0, 0, Service.VERTICAL, 100, true));
-
-		try {
-			Thread.sleep(2000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		RoboterFactory.getService(Service.VERTICAL, ResponsibiltySide.CLIENT)
-				.move(new Order(0, 0, Service.VERTICAL, 25, true));
-
-		RoboterFactory.getService(Service.GRABBER, ResponsibiltySide.CLIENT)
-				.move(new Order(0, 0, Service.GRABBER, 25, false));
-
+//		try {
+//			Thread.sleep(2000);
+//		} catch (InterruptedException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//
+//		RoboterFactory.getService(Service.GRABBER, ResponsibiltySide.CLIENT)
+//				.move(new Order(0, 0, Service.GRABBER, 0, true));
+//		
+//		RoboterFactory.getService(Service.HORIZONTAL, ResponsibiltySide.CLIENT)
+//				.move(new Order(0, 0, Service.HORIZONTAL, 100, true));
+//
+//		RoboterFactory.getService(Service.VERTICAL, ResponsibiltySide.CLIENT)
+//				.move(new Order(0, 0, Service.VERTICAL, 100, true));
+//
+//		try {
+//			Thread.sleep(2000);
+//		} catch (InterruptedException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//
+//		RoboterFactory.getService(Service.VERTICAL, ResponsibiltySide.CLIENT)
+//				.move(new Order(0, 0, Service.VERTICAL, 25, true));
+//
+//		RoboterFactory.getService(Service.GRABBER, ResponsibiltySide.CLIENT)
+//				.move(new Order(0, 0, Service.GRABBER, 25, false));
+//
 	}
 }

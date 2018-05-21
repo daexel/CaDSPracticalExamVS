@@ -91,9 +91,11 @@ public class GrapperServiceServer extends Thread implements RoboterService {
 							e.printStackTrace();
 						}
 						currentOrder = ordersQueue.poll();
+						System.out.println("Gepollt");
 					}
 				}
 				if (currentOrder == null && !ordersQueue.isEmpty()) {
+					System.out.println("Nochmal Gepollt weil order null und Queue empty");
 					currentOrder = ordersQueue.poll();
 				} else {
 					if ((robot.getGrapperStatus() == false) && (currentOrder.getIsOpen() == false)) {
@@ -103,6 +105,14 @@ public class GrapperServiceServer extends Thread implements RoboterService {
 					if ((robot.getGrapperStatus() == false) && (currentOrder.getIsOpen() == true)) {
 						System.out.println("Order empfangen OPEN");
 						robot.getHAL().doOpen();
+					}
+					if((robot.getGrapperStatus() == true) && (currentOrder.getIsOpen() == true)) {
+						System.out.println("Order empfangen OPEN");
+						robot.getHAL().doOpen();
+					}
+					if((robot.getGrapperStatus() == true) && (currentOrder.getIsOpen() == false)) {
+						System.out.println("Order empfangen CLOSE");
+						robot.getHAL().doClose();
 					}
 					currentOrder = null;
 				}
