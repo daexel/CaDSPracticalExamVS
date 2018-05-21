@@ -8,6 +8,10 @@ import org.cads.ev3.middleware.hal.ICaDSEV3RobotFeedBackListener;
 import org.cads.ev3.middleware.hal.ICaDSEV3RobotStatusListener;
 import org.json.simple.JSONObject;
 import cads.org.Middleware.Skeleton.RoboterService;
+import cads.org.Middleware.Stub.FeedbackStub;
+import cads.org.Ph.GrabberServer;
+import cads.org.Ph.HorizontalServer;
+import cads.org.Ph.VerticalServer;
 import cads.org.Server.Services.EstopServiceServer;
 import cads.org.Server.Services.GrapperServiceServer;
 import cads.org.Server.Services.HorizontalServiceServer;
@@ -18,7 +22,7 @@ import cads.org.client.Service;
 /**
  * @author daexel
  * 
- * Repräsentiert die Services in der Gesamtheit. Der Robot initalisiert alle Services.
+ * Reprï¿½sentiert die Services in der Gesamtheit. Der Robot initalisiert alle Services.
  *
  */
 
@@ -32,6 +36,7 @@ public class ModelRobot extends Thread implements ICaDSEV3RobotStatusListener, I
 	private JSONObject statusHorizontal;
 	private JSONObject statusVertical;
 	private static CaDSEV3RobotHAL callerBot = null;
+	private FeedbackStub fs = new FeedbackStub();
 	
 	public ModelRobot() {
 		callerBot = CaDSEV3RobotHAL.createInstance(CaDSEV3RobotType.SIMULATION, this, this);
@@ -74,16 +79,7 @@ public class ModelRobot extends Thread implements ICaDSEV3RobotStatusListener, I
 
 	@Override
 	public synchronized void onStatusMessage(JSONObject status) {
-		if (status.get("state") == "gripper") {
-			this.statusGripper = status;
-		}
-		if (status.get("state") == "horizontal") {
-			this.statusHorizontal = status;
-		}
-		if (status.get("state") == "vertical") {
-			this.statusVertical = status;
-		}
-
+		fs.send(status);
 	}
 
 

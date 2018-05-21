@@ -13,7 +13,7 @@ public class HorizontalReceiver extends ServiceOrderReceiver {
 
 	@Override
 	public void useService(Order order) {
-
+		if(cads.org.Debug.DEBUG.SKELETON_DEBUG)System.out.println(this.getClass()+ " Reiche Order weiter");
 		super.getServerController().getRobot().getService(Service.HORIZONTAL).move(order);
 
 	}

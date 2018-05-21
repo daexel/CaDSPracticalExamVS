@@ -7,7 +7,7 @@ import java.net.SocketException;
 
 import cads.org.client.Order;
 
-public class HorizontalServiceStub implements cads.org.Middleware.Skeleton.RoboterService{
+public class HorizontalServiceStub implements cads.org.Middleware.Skeleton.RoboterService {
 
 	private DatagramSocket serverSocket;
 	private static int port = 1338;
@@ -23,6 +23,10 @@ public class HorizontalServiceStub implements cads.org.Middleware.Skeleton.Robot
 		try {
 			p = new DatagramPacket(b, b.length, InetAddress.getLocalHost(), port);
 			serverSocket.send(p);
+			
+			if (cads.org.Debug.DEBUG.STUB_DEBUG)
+				System.out.println(this.getClass() + " Sended Order");
+			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

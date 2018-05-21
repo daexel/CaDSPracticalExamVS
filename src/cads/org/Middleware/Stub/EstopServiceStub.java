@@ -27,7 +27,6 @@ public class EstopServiceStub implements cads.org.Middleware.Skeleton.RoboterSer
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
 	}
 
 	public EstopServiceStub() {
