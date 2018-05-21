@@ -96,7 +96,7 @@ public class GrapperServiceServer extends Thread implements RoboterService {
 				if (currentOrder == null && !ordersQueue.isEmpty()) {
 					currentOrder = ordersQueue.poll();
 				} else {
-					if ((robot.getGrapperStatus() == true) && (currentOrder.getIsOpen() == false)) {
+					if ((robot.getGrapperStatus() == false) && (currentOrder.getIsOpen() == false)) {
 						System.out.println("Order empfangen CLOSE");
 						robot.getHAL().doClose();
 					}

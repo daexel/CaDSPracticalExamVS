@@ -2,17 +2,20 @@ package cads.org.Middleware.Skeleton;
 
 import cads.org.Server.ServerController;
 import cads.org.client.Order;
+import cads.org.client.Service;
 
 public class EstopReceiver extends ServiceOrderReceiver {
 
-	public EstopReceiver(int port, ServerController src) {
-		super(port, src);
-		// TODO Auto-generated constructor stub
+	public EstopReceiver(int port, ServerController srv) {
+		super(port, srv);
+
 	}
 
 	@Override
 	public void useService(Order order) {
-		this.src.getRobot().getEstopService().move(order);
+
+		super.getServerController().getRobot().getService(Service.ESTOP).move(order);
+
 	}
 
 }
