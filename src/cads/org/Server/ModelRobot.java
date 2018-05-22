@@ -91,6 +91,9 @@ public class ModelRobot extends Thread implements ICaDSEV3RobotStatusListener, I
 					}
 					if (status.get("state") == "vertical") {
 						this.statusVertical = status;
+						if(cads.org.Debug.DEBUG.MODEL_DEBUG) {
+							System.out.println(this.getClass()+ " VerticalValue: "+this.statusVertical.get("percent"));
+						}
 						
 					}
 	}

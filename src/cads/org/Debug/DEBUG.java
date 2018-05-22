@@ -25,5 +25,8 @@ public class DEBUG {
 	
 	// PH SERVICES DEBUG
 	public static final boolean PHIL_VERTICAL = true;
+	
+	// MODEL DEBUG
+	public static final boolean MODEL_DEBUG = true;
 
 }
