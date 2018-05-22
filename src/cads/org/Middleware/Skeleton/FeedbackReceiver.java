@@ -11,18 +11,19 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import cads.org.client.FeedbackListener;
 import cads.org.client.Surface;
 
 public class FeedbackReceiver {
 	private DatagramSocket sock;
 	private int p;
 
-	private Surface sfc;
+	private FeedbackListener fl;
 	private JSONParser jp;
 
-	public FeedbackReceiver(int port, Surface sfc) {
+	public FeedbackReceiver(int port, FeedbackListener fl) {
 		p = port;
-		this.sfc = sfc;
+		this.fl = fl;
 		jp = new JSONParser();
 		try {
 			sock = new DatagramSocket(p);
@@ -45,18 +46,18 @@ public class FeedbackReceiver {
 				try {
 					sock.receive(r);
 					r.getData();
-					
+
 					String s = new String(buf, StandardCharsets.UTF_8);
 					s = s.split("}")[0].concat("}");
-					if(cads.org.Debug.DEBUG.SKELETON_DEBUG) {
-						System.out.println(this.getClass()+" Received: "+s);
+					if (cads.org.Debug.DEBUG.FEEDBACK_RECEIVER) {
+						System.out.println(this.getClass() + " Received: " + s);
 					}
 
 					JSONObject jo = null;
-					
+
 					try {
-						jo = (JSONObject)jp.parse(s);
-						sfc.updateFeedback(jo);
+						jo = (JSONObject) jp.parse(s);
+						fl.updateFeedback(jo);
 					} catch (ParseException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();

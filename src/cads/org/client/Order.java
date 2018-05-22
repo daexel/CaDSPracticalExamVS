@@ -47,6 +47,7 @@ public class Order {
 		this.service = service;
 		this.valueOfMovement = valueOfMovement;
 		this.isOpen = isOpen;
+	
 	}
 
 	/**
@@ -66,12 +67,12 @@ public class Order {
 		jasonOrder.put("Value", order.getValueOfMovement());
 		if (order.getIsOpen() == true) {
 			jasonOrder.put("Grapperbool", 1);
-		} else if(order.getIsOpen() == false) {
+		} else if (order.getIsOpen() == false) {
 			jasonOrder.put("Grapperbool", 0);
 		}
-
-		System.out.println("Parser: created:" + jasonOrder.toJSONString());
-
+		if (cads.org.Debug.DEBUG.PARSER_DEBUG) {
+			System.out.println("Parser: created:" + jasonOrder.toJSONString());
+		}
 		byte[] buffer = null;
 		try {
 			buffer = jasonOrder.toJSONString().getBytes(charset);
@@ -101,6 +102,9 @@ public class Order {
 			bufferedString = new String(buffer, charset);
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
+		}
+		if(cads.org.Debug.DEBUG.PARSER_DEBUG) {
+			System.out.println("Orderparser parsing: "+bufferedString);
 		}
 
 		bufferedString = bufferedString.split("}")[0];
@@ -139,7 +143,9 @@ public class Order {
 		receivedOrder = new Order(Integer.parseInt(json.get("TID").toString()),
 				Integer.parseInt(json.get("RobotNumber").toString()), serviceReceived,
 				Integer.parseInt(json.get("Value").toString()), isOpen);
-		System.out.println(receivedOrder.toString());
+		if (cads.org.Debug.DEBUG.PARSER_DEBUG) {
+			System.out.println("Parser: " + receivedOrder.toString());
+		}
 
 		return receivedOrder;
 	}

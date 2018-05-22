@@ -15,7 +15,9 @@ public class GrabberReceiver extends ServiceOrderReceiver {
 
 	@Override
 	public void useService(Order order) {
-
+		if (cads.org.Debug.DEBUG.GRABBER_SKELETON_SERVICE) {
+			System.out.println(this.getClass() + " GrabberOrder: " + order.toString());
+		}
 		super.getServerController().getRobot().getService(Service.GRABBER).move(order);
 	}
 

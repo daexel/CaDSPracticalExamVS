@@ -154,8 +154,10 @@ public class HorizontalServiceServer extends Thread implements RoboterService {
 				/**
 				 * Horizontale Position ist erreicht worden
 				 */
-				System.out.println(robot.getHorizontalStatus());
-				System.out.println(currentOrder.getValueOfMovement());
+				if (cads.org.Debug.DEBUG.HORIZONTAL_SKELETON_SERVICE) {
+					System.out.println(this.getClass() + " " + robot.getHorizontalStatus());
+					System.out.println(this.getClass() + " " + currentOrder.getValueOfMovement());
+				}
 				if (robot.getHorizontalStatus() == currentOrder.getValueOfMovement()) {
 					robot.getHAL().stop_h();
 					System.out.println("Horizontal stopped finished");

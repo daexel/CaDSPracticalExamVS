@@ -17,6 +17,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import cads.org.Middleware.Skeleton.FeedbackReceiver;
 import cads.org.Middleware.Skeleton.ResponsibiltySide;
 import cads.org.Middleware.Skeleton.RoboterFactory;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -33,27 +34,64 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  */
 
 public class Surface implements IIDLCaDSEV3RMIMoveGripper, IIDLCaDSEV3RMIMoveHorizontal, IIDLCaDSEV3RMIMoveVertical,
-		IIDLCaDSEV3RMIUltraSonic, ICaDSRMIConsumer, FeedbackListener {
+		IIDLCaDSEV3RMIUltraSonic, ICaDSRMIConsumer {
 
-	static CaDSRobotGUISwing gui;
+	private static CaDSRobotGUISwing gui;
 	private int currentRoboters = 0;
 	private Order order = null;
 	private Service service = null;
-	private ConcurrentLinkedQueue<Order> queue = new ConcurrentLinkedQueue<Order>();
+	private OrderOrbit oo;
 
 	private long vPos = 0;
 	private long hPos = 0;
 	private boolean grabberState = false;
 
-	private Order[] sendOrders;
-
-	public Surface() {
-		SwingUtilities.invokeLater(new SwingGUI(this));
-
+	public long getvPos() {
+		return vPos;
 	}
 
-	public Order[] getOrders() {
-		return this.sendOrders;
+	public void setvPos(long vPos) {
+		this.vPos = vPos;
+		try {
+			gui.setVerticalProgressbar((int) vPos);
+		} catch (NullPointerException e) {
+			System.err.println("GUI still booting...");
+		}
+	}
+
+	public long gethPos() {
+		return hPos;
+	}
+
+	public void sethPos(long hPos) {
+		this.hPos = hPos;
+		try {
+			gui.setHorizontalProgressbar((int) hPos);
+		} catch (NullPointerException e) {
+			System.err.println("GUI still booting...");
+		}
+	}
+
+	public boolean isGrabberOpen() {
+		return grabberState;
+	}
+
+	public void setGrabberState(boolean grabberState) {
+		this.grabberState = grabberState;
+		try {
+			if (this.grabberState == false) {
+				gui.setGripperClosed();
+			} else {
+				gui.setGripperOpen();
+			}
+		} catch (NullPointerException e) {
+			System.err.println("GUI still booting...");
+		}
+	}
+
+	public Surface(OrderOrbit oo) {
+		SwingUtilities.invokeLater(new SwingGUI(this));
+		this.oo = oo;
 	}
 
 	@Override
@@ -73,18 +111,6 @@ public class Surface implements IIDLCaDSEV3RMIMoveGripper, IIDLCaDSEV3RMIMoveHor
 		currentRoboters = Integer.parseInt(arg0);
 	}
 
-	public Order getOrder() {
-		return this.order;
-	}
-
-	public void deleteOrder() {
-		this.order = null;
-	}
-
-	public Queue<Order> getQueue() {
-		return this.queue;
-	}
-
 	@Override
 	public int isUltraSonicOccupied() throws Exception {
 		// TODO Auto-generated method stub
@@ -102,8 +128,7 @@ public class Surface implements IIDLCaDSEV3RMIMoveGripper, IIDLCaDSEV3RMIMoveHor
 	@Override
 	public int moveVerticalToPercent(int arg0, int arg1) throws Exception {
 		this.order = new Order(arg0, currentRoboters, Service.VERTICAL, arg1, false);
-		RoboterFactory.getService(Service.VERTICAL, ResponsibiltySide.CLIENT).move(order);
-		System.out.println("Senden vertical");
+		oo.sendOrder(order);
 		return 0;
 	}
 
@@ -116,8 +141,7 @@ public class Surface implements IIDLCaDSEV3RMIMoveGripper, IIDLCaDSEV3RMIMoveHor
 	@Override
 	public int moveHorizontalToPercent(int arg0, int arg1) throws Exception {
 		this.order = new Order(arg0, currentRoboters, Service.HORIZONTAL, arg1, false);
-		RoboterFactory.getService(Service.HORIZONTAL, ResponsibiltySide.CLIENT).move(order);
-		System.out.println("Sended Horizontal");
+		oo.sendOrder(order);
 		return 0;
 	}
 
@@ -129,9 +153,8 @@ public class Surface implements IIDLCaDSEV3RMIMoveGripper, IIDLCaDSEV3RMIMoveHor
 
 	@Override
 	public int closeGripper(int arg0) throws Exception, IOException {
-		order = new Order(arg0, currentRoboters, service.GRABBER, 0, false);
-		this.queue.add(order);
-		System.out.println("Gripper closed");
+		this.order = new Order(arg0, currentRoboters, Service.GRABBER, 0, false);
+		oo.sendOrder(order);
 		return 0;
 	}
 
@@ -145,18 +168,11 @@ public class Surface implements IIDLCaDSEV3RMIMoveGripper, IIDLCaDSEV3RMIMoveHor
 
 	@Override
 	public int openGripper(int arg0) throws Exception {
-		order = new Order(arg0, currentRoboters, service.GRABBER, 0, true);
-		this.queue.add(order);
-		System.out.println("Gripper opened");
+		this.order = new Order(arg0, currentRoboters, Service.GRABBER, 0, true);
+		oo.sendOrder(order);
 		return 0;
 	}
 
-	/**
-	 * 
-	 * @author daexel
-	 *
-	 *         Start der Gui
-	 */
 	public class SwingGUI implements Runnable {
 		Surface c;
 
@@ -174,43 +190,6 @@ public class Surface implements IIDLCaDSEV3RMIMoveGripper, IIDLCaDSEV3RMIMoveHor
 
 			} catch (Exception e) {
 				e.printStackTrace();
-			}
-		}
-	}
-
-	@Override
-	public void updateFeedback(JSONObject obj) throws IllegalArgumentException {
-		if (cads.org.Debug.DEBUG.CLIENT_DEBUG) {
-			System.out.println(obj.toString());
-		}
-		if (obj != null) {
-
-			if (obj.get("state").equals("gripper")) {
-				if (((String) obj.get("value")).equals("open")) {
-					grabberState = true;
-				} else {
-					grabberState = false;
-				}
-			} else if (obj.get("state").equals("horizontal")) {
-				hPos = (long) obj.get("percent");
-				try {
-					gui.setHorizontalProgressbar((int) hPos);
-				} catch (NullPointerException e) {
-					System.err.println(this.getClass() + " Booting Gui");
-				}
-
-			} else if (obj.get("state").equals("vertical")) {
-				vPos = (long) obj.get("percent");
-				System.out.println(vPos);
-			
-				try {
-					gui.setVerticalProgressbar((int) vPos);
-				} catch (NullPointerException e) {
-					System.err.println(this.getClass() + " Booting Gui");
-				}
-
-			} else {
-				System.err.println(this.getClass() + "Unuseable feedbacktype");
 			}
 		}
 	}

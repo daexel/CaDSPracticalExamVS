@@ -12,6 +12,7 @@ public class VerticalServer implements RoboterService, Runnable {
 	private Thread ich;
 	private String direction = null;
 	private int lastPos = 0;
+	private boolean moving = false;
 
 	public VerticalServer(CaDSEV3RobotHAL hal) {
 
@@ -24,27 +25,35 @@ public class VerticalServer implements RoboterService, Runnable {
 	@Override
 	public void move(Order order) {
 		hal.stop_v();
-		value = order.getValueOfMovement();
-		System.out.println("CHANGED to : " + value);
+		this.setValue(order.getValueOfMovement());
+		System.out.println("CHANGED to : " + this.getValue());
 
 	}
 
-	public void updatePosition(long hPos) {
+	public void updatePosition(long vPos) {
 		if (direction == null) {
 			return;
 		}
 		if (direction.equals("up")) {
-			if (hPos >= value) {
-				System.out.println("hoch & Größer");
+			if (vPos > this.getValue()) {
+				if (cads.org.Debug.DEBUG.PHIL_VERTICAL) {
+					System.out.println(this.getClass() + " ÜBER ERREICHTEM WERT: Aktuelle Position: " + vPos
+							+ " ValueToMove: " + this.getValue());
+				}
 				hal.stop_v();
-				lastPos = (int) hPos;
+				lastPos = (int) vPos;
+
 			}
 		}
 		if (direction.equals("down")) {
-			if (hPos <= value) {
-				System.out.println("runter & Kleiner");
+			if (vPos < this.getValue()) {
+				if (cads.org.Debug.DEBUG.PHIL_VERTICAL) {
+					System.out.println(this.getClass() + "UNTER ERREICHTEM WERT: Aktuelle Position: " + vPos
+							+ " ValueToMove: " + this.getValue());
+				}
 				hal.stop_v();
-				lastPos = (int) hPos;
+				lastPos = (int) vPos;
+
 			}
 		}
 	}
@@ -52,18 +61,35 @@ public class VerticalServer implements RoboterService, Runnable {
 	@Override
 	public void run() {
 		while (true) {
-			synchronized (this) {
-				if (value > lastPos) {
-					System.out.println("eigentlich geh ich hoch");
-					direction = "up";
-					hal.moveUp();
-				} else if (value < lastPos) {
-					direction = "down";
-					hal.moveDown();
-				} else {
 
+			if (this.getValue() > lastPos) {
+
+				if (cads.org.Debug.DEBUG.PHIL_VERTICAL) {
+					System.out.println(this.getClass() + " Hoch fahren");
 				}
+				direction = "up";
+				hal.moveUp();
+			} else if (this.getValue() < lastPos) {
+				if (cads.org.Debug.DEBUG.PHIL_VERTICAL) {
+					System.out.println(this.getClass() + " Runter fahren");
+				}
+				direction = "down";
+				hal.moveDown();
+			} else if (this.getValue() == lastPos) {
 			}
+
+		}
+	}
+
+	private void setValue(int value) {
+		synchronized (this) {
+			this.value = value;
+		}
+	}
+
+	private int getValue() {
+		synchronized (this) {
+			return value;
 		}
 	}
 

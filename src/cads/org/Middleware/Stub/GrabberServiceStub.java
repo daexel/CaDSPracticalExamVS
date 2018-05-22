@@ -27,7 +27,7 @@ public class GrabberServiceStub implements cads.org.Middleware.Skeleton.RoboterS
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
+		System.out.println(this.getClass() +" Sended Grabber Order: "+ order.toString());
 	}
 
 	public GrabberServiceStub() {

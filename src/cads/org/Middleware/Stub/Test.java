@@ -1,19 +1,12 @@
 package cads.org.Middleware.Stub;
 
-import java.util.concurrent.TimeUnit;
-
 import cads.org.Middleware.Skeleton.EstopReceiver;
-import cads.org.Middleware.Skeleton.FeedbackReceiver;
 import cads.org.Middleware.Skeleton.GrabberReceiver;
 import cads.org.Middleware.Skeleton.HorizontalReceiver;
-import cads.org.Middleware.Skeleton.ResponsibiltySide;
-import cads.org.Middleware.Skeleton.RoboterFactory;
 import cads.org.Middleware.Skeleton.ServiceOrderReceiver;
 import cads.org.Middleware.Skeleton.VerticalReceiver;
 import cads.org.Server.ServerController;
 import cads.org.client.ClientController;
-import cads.org.client.Order;
-import cads.org.client.Service;
 import cads.org.client.Surface;
 
 public class Test {
@@ -21,6 +14,8 @@ public class Test {
 	// What???????????????????
 	public static void main(String[] args) throws InterruptedException {
 
+		ClientController cc = new ClientController();
+	
 		
 		ServerController srv = new ServerController();
 		srv.getRobot().start();
@@ -30,7 +25,6 @@ public class Test {
 		ServiceOrderReceiver vertical = new VerticalReceiver(1337, srv);
 		ServiceOrderReceiver horizontal = new HorizontalReceiver(1338, srv);
 		ServiceOrderReceiver grabber = new GrabberReceiver(1339, srv);
-		//FeedbackReceiver fr = new FeedbackReceiver(1500, sfc);
 		
 //		TimeUnit.SECONDS.sleep(10);
 //		RoboterFactory.getService(Service.GRABBER, ResponsibiltySide.CLIENT)

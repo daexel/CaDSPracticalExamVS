@@ -4,17 +4,20 @@
 package cads.org.Server.Services;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
-
 import cads.org.Middleware.Skeleton.RoboterService;
 import cads.org.Server.ModelRobot;
+
 import cads.org.client.Order;
 
 /**
  * @author daexel
+ * 
+ *         Speichert die Order in eine Queue(Threadsave)
  *
  */
 public class VerticalServiceServer extends Thread implements RoboterService {
 	private ReceiverThread receiver;
+	private StopperThread stopper;
 	private IncomingOrderThread incoming;
 	private ConcurrentLinkedQueue<Order> ordersQueue;
 	private boolean newOrderIsComming;
@@ -24,6 +27,7 @@ public class VerticalServiceServer extends Thread implements RoboterService {
 	private boolean mainThreadIsRunning;
 	private ModelRobot robot;
 	private Order currentOrder;
+
 	private Object receiverObject;
 	private Object incomingObject;
 
@@ -39,20 +43,20 @@ public class VerticalServiceServer extends Thread implements RoboterService {
 		currentOrder = null;
 		receiverObject = new Object();
 		incomingObject = new Object();
-		System.out.println("Vertical Service initalized");
+		System.out.println("Horizontal Service initalized");
 	}
 
 	@Override
 	public void move(Order order) {
 		newOrderIsComming = true;
 		synchronized (incomingObject) {
-			System.out.println("Horizontal incoming calls notify");
+			System.out.println("Vertical incoming calls notify");
 			incomingObject.notify();
 		}
 		ordersQueue.add(order);
 
 		synchronized (receiverObject) {
-			System.out.println("Horizontal receiver calls notify");
+			System.out.println("Vertical receiver calls notify");
 			receiverObject.notify();
 		}
 	}
@@ -69,7 +73,7 @@ public class VerticalServiceServer extends Thread implements RoboterService {
 		return ordersQueue.poll();
 	}
 
-	public ConcurrentLinkedQueue<Order> getOrdersQueue() {
+	public ConcurrentLinkedQueue<Order> getOrdersVerticalQueue() {
 		return ordersQueue;
 	}
 
@@ -88,23 +92,22 @@ public class VerticalServiceServer extends Thread implements RoboterService {
 	@Override
 	public void run() {
 		receiver.start();
-		// System.out.println("ReceiverVertical gestartet");
+		// System.out.println("Receiver gestartet");
 		incoming.start();
-		// System.out.println("IncomingVertical gestartet");
+		// System.out.println("Incoming gestartet");
 
 		while (mainThreadIsRunning) {
 
 		}
-
 		watchdogIsRunning = false;
 		threadStopperIsRunning = false;
 		inComingIsRunning = false;
 
 		try {
 			receiver.join();
+			stopper.join();
 			incoming.join();
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -132,11 +135,11 @@ public class VerticalServiceServer extends Thread implements RoboterService {
 				// System.out.println("CurrentOrder Horizontal aktualisiert: " +
 				// currentOrder.getValueOfMovement());
 				if (robot.getVerticalStatus() < currentOrder.getValueOfMovement()) {
-					System.out.println("Order empfangen Links");
+					System.out.println("Order empfangen Hoch");
 					robot.getHAL().moveUp();
 				}
 				if (robot.getVerticalStatus() > currentOrder.getValueOfMovement()) {
-					System.out.println("Order empfangen Rechts");
+					System.out.println("Order empfangen Runter");
 					robot.getHAL().moveDown();
 				}
 
@@ -149,13 +152,15 @@ public class VerticalServiceServer extends Thread implements RoboterService {
 		public void run() {
 			while (threadStopperIsRunning) {
 				/**
-				 * Horizontale Position ist erreicht worden
+				 * Verticale Position ist erreicht worden
 				 */
-				System.out.println(robot.getVerticalStatus());
-				System.out.println(currentOrder.getValueOfMovement());
+				if (cads.org.Debug.DEBUG.VERTICAL_SKELETON_SERVICE) {
+					System.out.println(this.getClass() + " " + robot.getVerticalStatus());
+					System.out.println(this.getClass() + " " + currentOrder.getValueOfMovement());
+				}
 				if (robot.getVerticalStatus() == currentOrder.getValueOfMovement()) {
 					robot.getHAL().stop_v();
-					System.out.println("Horizontal stopped finished");
+					System.out.println("Vertical stopped finished");
 					threadStopperIsRunning = false;
 
 				}
