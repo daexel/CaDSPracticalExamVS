@@ -47,7 +47,36 @@ public class Order {
 		this.service = service;
 		this.valueOfMovement = valueOfMovement;
 		this.isOpen = isOpen;
-	
+
+		if (this.service == Service.VERTICAL) {
+			if (this.valueOfMovement <= 22) {
+				this.valueOfMovement = this.valueOfMovement % 2 == 0 ? this.valueOfMovement : this.valueOfMovement + 1;
+			} else if (this.valueOfMovement == 23 | this.valueOfMovement == 24) {
+				this.valueOfMovement = 25;
+			} else if (this.valueOfMovement >= 25 & this.valueOfMovement < 49) {
+				this.valueOfMovement = this.valueOfMovement % 2 == 0 ? this.valueOfMovement + 1 : this.valueOfMovement;
+			} else if (this.valueOfMovement >= 49 & this.valueOfMovement < 69) {
+				this.valueOfMovement = this.valueOfMovement % 2 == 0 ? this.valueOfMovement : this.valueOfMovement + 1;
+			} else if (this.valueOfMovement >= 69 & this.valueOfMovement < 77) {
+				this.valueOfMovement = 72;
+			} else if (this.valueOfMovement >= 77 & this.valueOfMovement < 84) {
+				this.valueOfMovement = this.valueOfMovement % 2 == 0 ? this.valueOfMovement + 1 : this.valueOfMovement;
+			} else if (this.valueOfMovement >= 84 & this.valueOfMovement < 87) {
+				this.valueOfMovement = 87;
+			} else if (this.valueOfMovement >= 87 & this.valueOfMovement < 92) {
+				this.valueOfMovement = this.valueOfMovement % 2 == 0 ? this.valueOfMovement + 1 : this.valueOfMovement;
+			} else if (this.valueOfMovement == 92 | this.valueOfMovement == 93 | this.valueOfMovement == 94) {
+				this.valueOfMovement = 95;
+			} else if (this.valueOfMovement >= 95 & this.valueOfMovement < 98) {
+				this.valueOfMovement = this.valueOfMovement % 2 == 0 ? this.valueOfMovement + 1 : this.valueOfMovement;
+			} else if (this.valueOfMovement >= 98) {
+				this.valueOfMovement = 100;
+			}
+		}
+		if (cads.org.Debug.DEBUG.ORDER_DEBUG) {
+			System.out.println(this.getClass() + " Value of Order " + this.valueOfMovement);
+		}
+
 	}
 
 	/**
@@ -103,8 +132,8 @@ public class Order {
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
-		if(cads.org.Debug.DEBUG.PARSER_DEBUG) {
-			System.out.println("Orderparser parsing: "+bufferedString);
+		if (cads.org.Debug.DEBUG.PARSER_DEBUG) {
+			System.out.println("Orderparser parsing: " + bufferedString);
 		}
 
 		bufferedString = bufferedString.split("}")[0];
