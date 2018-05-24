@@ -34,9 +34,11 @@ public class RegistryReceiver {
 			try {
 				while (true) {
 					s.receive(r);
-					System.out.println("received");
+
 					byte[] duf = r.getData();
-					queue.add(new RegistryProtocolPaket(Arrays.toString(duf)));
+				
+					System.out.println("Length: "+duf.length+" received: " + new String(duf));
+					queue.add(new RegistryProtocolPaket(Arrays.toString(duf))); ///???? hier passsiert scheiße
 					synchronized (this) {
 						notify();
 					}
@@ -65,6 +67,7 @@ public class RegistryReceiver {
 				synchronized (this) {
 					try {
 						wait();
+						System.out.println(this.getClass() + " Processor was waked up");
 					} catch (InterruptedException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -73,7 +76,7 @@ public class RegistryReceiver {
 			}
 			queue.poll();
 			if (cads.org.Debug.DEBUG.REGISTRY_RECEIVER_DEBUG) {
-				System.out.println(this.getClass() + " Processor was waked up");
+				
 			}
 		}
 

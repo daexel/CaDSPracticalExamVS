@@ -20,7 +20,7 @@ public class RegisterModul {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		RegistryProtocolPaket rp = new RegistryProtocolPaket(adress, name, s.getLocalPort(),
+		RegistryProtocolPaket rp = new RegistryProtocolPaket(adress, name, s.getLocalPort(),2000,
 				NameServiceRegisterSide.REGISTER_CLIENT, roboterID);
 		try {
 			s.send(rp.getDatagramPacket());

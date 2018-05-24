@@ -19,10 +19,12 @@ public class RegistryProtocolPaket {
 	private NameServiceRegisterSide n;
 	private JSONObject obj;
 	private int roboterID;
+	private int portToSendFrom;
 
-	public RegistryProtocolPaket(String adress, String name, int port, NameServiceRegisterSide n,int roboterID) {
+	public RegistryProtocolPaket(String adress, String name, int portToReceiver, int portToSendFrom, NameServiceRegisterSide n,int roboterID) {
 		obj = new JSONObject();
-		this.port = port;
+		this.portToSendFrom=portToSendFrom;
+		this.port = portToReceiver;
 		this.name = name;
 		this.roboterID = roboterID;
 		this.adress = adress;
@@ -35,9 +37,10 @@ public class RegistryProtocolPaket {
 
 	public RegistryProtocolPaket(String unformatedString) {
 
-		unformatedString = unformatedString.split("}")[0] + "}";
+		unformatedString = unformatedString.split("}")[0]+"}";
 		JSONParser jp = new JSONParser();
 		JSONObject o = null;
+		System.out.println("String der 719 lang ist: "+unformatedString);
 
 		try {
 			o = (JSONObject) jp.parse(unformatedString);
@@ -68,7 +71,7 @@ public class RegistryProtocolPaket {
 		byte[] b = this.getByteArrayOfJSONObject();
 		DatagramPacket dp = null;
 		try {
-			dp = new DatagramPacket(b, b.length, (Inet4Address) Inet4Address.getByName(this.adress), this.port);
+			dp = new DatagramPacket(b, b.length, (Inet4Address) Inet4Address.getByName(this.adress), this.portToSendFrom);
 		} catch (UnknownHostException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
