@@ -59,7 +59,15 @@ public class Test {
 		
 		NameResolution map = new NameResolution();
 		RegistryReceiver r = new RegistryReceiver(map);
-		RegisterModul rm = new RegisterModul();
-		rm.registerService("benisskeleton", "localhost", 1);
+		RegisterModul rm1 = new RegisterModul();
+	
+		try {
+			rm1.registerService("ReceiverSkeleton", "localhost", 1);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	
 	}
 }

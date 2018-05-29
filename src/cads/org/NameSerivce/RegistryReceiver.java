@@ -3,17 +3,28 @@ package cads.org.NameSerivce;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.Inet4Address;
+import java.net.InetAddress;
 import java.net.SocketException;
-import java.util.Arrays;
+import java.net.UnknownHostException;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class RegistryReceiver {
+	private final static int REGISTRY_PORT = 5000;
 	private ConcurrentLinkedQueue<RegistryProtocolPaket> queue;
+	private boolean processorRunning = false;
 
-	public RegistryReceiver(NameResolution map) {
+	public synchronized boolean isProcessorRunning() {
+		return processorRunning;
+	}
+
+	public synchronized void setProcessorRunning(boolean processorRunning) {
+		this.processorRunning = processorRunning;
+	}
+
+	public RegistryReceiver(NameResolution stabMap) {
 		queue = new ConcurrentLinkedQueue<RegistryProtocolPaket>();
 		receiver.start();
-		processor.start();
 	}
 
 	private Thread receiver = new Thread(new Runnable() {
@@ -22,7 +33,7 @@ public class RegistryReceiver {
 		public void run() {
 			DatagramSocket s = null;
 			try {
-				s = new DatagramSocket(2000);
+				s = new DatagramSocket(REGISTRY_PORT);
 			} catch (SocketException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -30,18 +41,25 @@ public class RegistryReceiver {
 			int bufMaxLength = 200;
 			byte[] buf = new byte[bufMaxLength];
 			DatagramPacket r = new DatagramPacket(buf, bufMaxLength);
-			System.out.println("initialiserte alles");
+			if (cads.org.Debug.DEBUG.REGISTRY_RECEIVER_DEBUG) {
+				System.out.println(this.getClass() + ": Receiver running...");
+			}
 			try {
 				while (true) {
 					s.receive(r);
 
 					byte[] duf = r.getData();
-				
-					System.out.println("Length: "+duf.length+" received: " + new String(duf));
-					queue.add(new RegistryProtocolPaket(Arrays.toString(duf))); ///???? hier passsiert scheiße
-					synchronized (this) {
-						notify();
+
+					System.out.println(this.getClass() + ": Length: " + duf.length + " received: " + new String(duf));
+					queue.add(new RegistryProtocolPaket(new String(duf)));
+					if (isProcessorRunning() == false) {
+						if (cads.org.Debug.DEBUG.REGISTRY_RECEIVER_DEBUG) {
+							System.out.println(this.getClass() + ": Creating new processor.");
+						}
+						new Thread(processor).start();
+
 					}
+
 				}
 
 			} catch (IOException e) {
@@ -56,30 +74,55 @@ public class RegistryReceiver {
 
 		@Override
 		public void run() {
-			DatagramSocket s;
+			setProcessorRunning(true);
+			DatagramSocket s = null;
 			try {
 				s = new DatagramSocket();
-			} catch (SocketException e1) {
+			} catch (SocketException e2) {
 				// TODO Auto-generated catch block
-				e1.printStackTrace();
+				e2.printStackTrace();
 			}
-			if (queue.isEmpty()) {
-				synchronized (this) {
-					try {
-						wait();
-						System.out.println(this.getClass() + " Processor was waked up");
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+		
+		
+			RegistryProtocolPaket rp = null;
+			while (!queue.isEmpty()) {
+				if (cads.org.Debug.DEBUG.REGISTRY_RECEIVER_DEBUG) {
+					System.out.println(this.getClass() + ": MAGIC.");
 				}
-			}
-			queue.poll();
-			if (cads.org.Debug.DEBUG.REGISTRY_RECEIVER_DEBUG) {
-				
-			}
-		}
+				rp = queue.poll();
+				int port = 10000;
+				/**
+				 * hier muss einiges an magic passieren: erstmal den neunen name service in der
+				 * map eintragen einen thread starten der absofort dafür verantwortlich ist die
+				 * nachrichten für den anfragenden service entgegen zu nehmen und dem kollegen
+				 * dann erzählen auf welchen port er die sachen zu schicken hat.
+				 */
 
+				/** nur um zu sehen ob der mehr als 1 nachricht kann **/
+				try {
+					RegistryProtocolPaket r=  new RegistryProtocolPaket("localhost", "NameService", RegistryMessageType.REGISTRY_ACCEPTION,
+							port, 1,rp.getAnswerPort());
+					DatagramPacket dP = r.getDatagramPacket();
+				
+					System.out.println("DP  Port : "+ dP.getSocketAddress().toString()+" DP Adress: "+ dP.getAddress());
+					s.send(dP);
+				} catch (UnknownHostException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+				if (cads.org.Debug.DEBUG.REGISTRY_RECEIVER_DEBUG) {
+					System.out.println(
+							this.getClass() + ": Port i will delivered and Service can send to the by map opened port");
+					System.out.println(this.getClass() + ": Queue is empty, Processor fals asleep.");
+				}
+
+			}
+			setProcessorRunning(false);
+		}
 	});
 
 	public static void main(String[] args) {

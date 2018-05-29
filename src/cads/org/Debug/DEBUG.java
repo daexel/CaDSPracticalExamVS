@@ -34,9 +34,12 @@ public class DEBUG {
 
 	// REGISTRY PROTOCOL DEBUG
 
-	public static final boolean REGISTRY_PROTOCOL_DEBUG = false;
+	public static final boolean REGISTRY_PROTOCOL_DEBUG = true;
 
 	// REGISTRY RECEIVER DEBUG
 	public static final boolean REGISTRY_RECEIVER_DEBUG = true;
+	
+	// REGISTRY MODUL DEBUG
+	public static final boolean REGISTY_MODUL_DEBUG = true;
 
 }
