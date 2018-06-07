@@ -46,13 +46,13 @@ public class VerticalServiceServer extends Thread implements RoboterService {
 	public void move(Order order) {
 		newOrderIsComming = true;
 		synchronized (incomingObject) {
-			System.out.println("Horizontal incoming calls notify");
+			System.out.println("Vertical incoming calls notify");
 			incomingObject.notify();
 		}
 		ordersQueue.add(order);
 
 		synchronized (receiverObject) {
-			System.out.println("Horizontal receiver calls notify");
+			System.out.println("Vertical receiver calls notify");
 			receiverObject.notify();
 		}
 	}
@@ -151,11 +151,11 @@ public class VerticalServiceServer extends Thread implements RoboterService {
 				/**
 				 * Horizontale Position ist erreicht worden
 				 */
-				System.out.println(robot.getVerticalStatus());
-				System.out.println(currentOrder.getValueOfMovement());
+				System.out.println("Status Vertical: "+robot.getVerticalStatus());
+				System.out.println("Value CurrentOrder: "+currentOrder.getValueOfMovement());
 				if (robot.getVerticalStatus() == currentOrder.getValueOfMovement()) {
 					robot.getHAL().stop_v();
-					System.out.println("Horizontal stopped finished");
+					System.out.println("Vertical stopped finished");
 					threadStopperIsRunning = false;
 
 				}

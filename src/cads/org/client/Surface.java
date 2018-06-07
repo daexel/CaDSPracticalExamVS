@@ -40,7 +40,7 @@ public class Surface implements IIDLCaDSEV3RMIMoveGripper, IIDLCaDSEV3RMIMoveHor
 	private Order order = null;
 	private Service service = null;
 	private ConcurrentLinkedQueue<Order> queue = new ConcurrentLinkedQueue<Order>();
-
+	private Object receiverObject;
 	private long vPos = 0;
 	private long hPos = 0;
 	private boolean grabberState = false;
@@ -49,7 +49,16 @@ public class Surface implements IIDLCaDSEV3RMIMoveGripper, IIDLCaDSEV3RMIMoveHor
 
 	public Surface() {
 		SwingUtilities.invokeLater(new SwingGUI(this));
+		receiverObject = new Object();
 
+	}
+
+	public Object getReceiverObject() {
+		return receiverObject;
+	}
+
+	public void setReceiverObject(Object receiverObject) {
+		this.receiverObject = receiverObject;
 	}
 
 	public Order[] getOrders() {
@@ -102,8 +111,11 @@ public class Surface implements IIDLCaDSEV3RMIMoveGripper, IIDLCaDSEV3RMIMoveHor
 	@Override
 	public int moveVerticalToPercent(int arg0, int arg1) throws Exception {
 		this.order = new Order(arg0, currentRoboters, Service.VERTICAL, arg1, false);
-		RoboterFactory.getService(Service.VERTICAL, ResponsibiltySide.CLIENT).move(order);
-		System.out.println("Senden vertical");
+		queue.add(order);
+		synchronized (receiverObject) {
+			System.out.println("VerticalOrder created");
+			receiverObject.notify();
+		}
 		return 0;
 	}
 
@@ -116,8 +128,11 @@ public class Surface implements IIDLCaDSEV3RMIMoveGripper, IIDLCaDSEV3RMIMoveHor
 	@Override
 	public int moveHorizontalToPercent(int arg0, int arg1) throws Exception {
 		this.order = new Order(arg0, currentRoboters, Service.HORIZONTAL, arg1, false);
-		RoboterFactory.getService(Service.HORIZONTAL, ResponsibiltySide.CLIENT).move(order);
-		System.out.println("Sended Horizontal");
+		queue.add(order);
+		synchronized (receiverObject) {
+			System.out.println("HorizontalOrder created");
+			receiverObject.notify();
+		}
 		return 0;
 	}
 
@@ -131,7 +146,10 @@ public class Surface implements IIDLCaDSEV3RMIMoveGripper, IIDLCaDSEV3RMIMoveHor
 	public int closeGripper(int arg0) throws Exception, IOException {
 		order = new Order(arg0, currentRoboters, service.GRABBER, 0, false);
 		this.queue.add(order);
-		System.out.println("Gripper closed");
+		synchronized (receiverObject) {
+			System.out.println("CloseGripper created");
+			receiverObject.notify();
+		}
 		return 0;
 	}
 
@@ -147,7 +165,10 @@ public class Surface implements IIDLCaDSEV3RMIMoveGripper, IIDLCaDSEV3RMIMoveHor
 	public int openGripper(int arg0) throws Exception {
 		order = new Order(arg0, currentRoboters, service.GRABBER, 0, true);
 		this.queue.add(order);
-		System.out.println("Gripper opened");
+		synchronized (receiverObject) {
+			System.out.println("OpenGripper created");
+			receiverObject.notify();
+		}
 		return 0;
 	}
 

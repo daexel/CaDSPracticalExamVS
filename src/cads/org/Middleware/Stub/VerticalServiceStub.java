@@ -18,6 +18,9 @@ public class VerticalServiceStub implements cads.org.Middleware.Skeleton.Roboter
 	}
 
 	private void sendOrder(Order order) {
+		if((order.getValueOfMovement()%2)!=0) {
+			order.setValueOfMovement(order.getValueOfMovement()+1);
+		}
 		byte[] b = Order.parseOrder(order);
 		DatagramPacket p = null;
 		try {

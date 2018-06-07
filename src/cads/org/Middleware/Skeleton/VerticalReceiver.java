@@ -14,7 +14,7 @@ public class VerticalReceiver extends ServiceOrderReceiver {
 
 	@Override
 	public void useService(Order order) {
-
+		System.out.println("SkeletonReceiver: "+order.getValueOfMovement());
 		super.getServerController().getRobot().getService(Service.VERTICAL).move(order);
 	}
 

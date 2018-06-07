@@ -42,9 +42,16 @@ public class ClientController implements Runnable {
 	@Override
 	public void run() {      
 		while(true) {			
-			if(!surface.getQueue().isEmpty()) {
-				sendOrder(surface.getQueue().poll());
-			}
+			synchronized (surface.getReceiverObject()) {
+				try {
+					surface.getReceiverObject().wait();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}	
+				order =surface.getQueue().poll();
+				sendOrder(order);
+			
 		}
 	}
 	

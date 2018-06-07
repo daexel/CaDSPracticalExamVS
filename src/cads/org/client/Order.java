@@ -45,8 +45,10 @@ public class Order {
 		this.tid = tid;
 		this.roboter = roboter;
 		this.service = service;
-		this.valueOfMovement = valueOfMovement;
+		this.valueOfMovement=valueOfMovement;
 		this.isOpen = isOpen;
+		System.out.println("Order erstellt mit Value: "+this.valueOfMovement);
+		System.out.println(valueOfMovement);
 	}
 
 	/**
