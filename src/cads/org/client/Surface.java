@@ -17,7 +17,6 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import cads.org.Middleware.Skeleton.FeedbackReceiver;
 import cads.org.Middleware.Skeleton.ResponsibiltySide;
 import cads.org.Middleware.Skeleton.RoboterFactory;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -36,7 +35,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class Surface implements IIDLCaDSEV3RMIMoveGripper, IIDLCaDSEV3RMIMoveHorizontal, IIDLCaDSEV3RMIMoveVertical,
 		IIDLCaDSEV3RMIUltraSonic, ICaDSRMIConsumer {
 
-	private static CaDSRobotGUISwing gui;
+	public static CaDSRobotGUISwing gui;
 	private int currentRoboters = 0;
 	private Order order = null;
 	private Service service = null;
@@ -61,6 +60,12 @@ public class Surface implements IIDLCaDSEV3RMIMoveGripper, IIDLCaDSEV3RMIMoveHor
 
 	public long gethPos() {
 		return hPos;
+	}
+
+	public void refreshGUI() {
+		gui.setHorizontalProgressbar(0);
+		gui.setVerticalProgressbar(0);
+		gui.setGripperClosed();
 	}
 
 	public void sethPos(long hPos) {
@@ -185,13 +190,15 @@ public class Surface implements IIDLCaDSEV3RMIMoveGripper, IIDLCaDSEV3RMIMoveHor
 			try {
 				// server = new ControllServer(1337);
 				gui = new CaDSRobotGUISwing(c, c, c, c, c);
-				gui.addService("Roboter 1");
-				gui.addService("Roboter 2");
 
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
+	}
+
+	public void addService(String toAdd) {
+		gui.addService(toAdd);
 	}
 
 	// Main for testing component

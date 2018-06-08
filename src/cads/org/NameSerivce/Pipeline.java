@@ -133,30 +133,41 @@ public class Pipeline {
 			}
 
 			while (!queue.isEmpty()) {
-
 				DatagramPacket dp = queue.poll();
-				try {
-					dp.setAddress(skeletonAdress.getAdress());
-				} catch (UnknownHostException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				if (isSkeletonRegistered == true) {
 
-				dp.setPort(skeletonAdress.getPort());
-				try {
-					s.send(dp);
-					System.out.println("Pipeline sended Packet over NS");
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+					try {
+						dp.setAddress(skeletonAdress.getAdress());
+					} catch (UnknownHostException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 
+					dp.setPort(skeletonAdress.getPort());
+					try {
+						s.send(dp);
+						System.out.println("Pipeline sended Packet over NS");
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+
+				} else {
+					System.out.println(this.getClass() + ": no skeleton registered");
+				}
 			}
 			setProcessorRunning(false);
-			System.out.println("Processor sleeping");
+			System.out.println(this.getClass() + ": Processor sleeping");
 		}
 
 	}
 
 	);
+
+	@Override
+	public String toString() {
+		return "Pipeline: SkeletonRegistered = " + isSkeletonRegistered + " StubRegistered: " + isStubRegistered;
+	}
+	
+	
 }

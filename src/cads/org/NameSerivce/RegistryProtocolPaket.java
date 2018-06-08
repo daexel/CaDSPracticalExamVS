@@ -2,14 +2,17 @@ package cads.org.NameSerivce;
 
 import java.net.DatagramPacket;
 import java.net.Inet4Address;
+import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-public class RegistryProtocolPaket {
+import cads.org.client.Service;
 
+public class RegistryProtocolPaket {
+	private String hostAdress = "127.0.0.1";
 	private String adress; // from the sender of this object
 	private String name;
 	private final static int REGISTRY_NAMESERVICE_PORT = 5000;
@@ -95,18 +98,20 @@ public class RegistryProtocolPaket {
 		DatagramPacket dp = null;
 		try {
 			if (this.rmt == RegistryMessageType.REGISTRY_REQUEST) {
-				dp = new DatagramPacket(b, b.length, (Inet4Address) Inet4Address.getByName(this.adress),
+				dp = new DatagramPacket(b, b.length, (Inet4Address) Inet4Address.getByName(hostAdress),
 						REGISTRY_NAMESERVICE_PORT);
 				if (cads.org.Debug.DEBUG.REGISTRY_PROTOCOL_DEBUG) {
-					System.out.println(this.getClass() + ": Created DatagramPaket " + this.getJSON().toString());
+					System.out
+							.println(this.getClass() + ":REQUEST: Created DatagramPaket " + this.getJSON().toString());
 				}
 			} else if (this.rmt == RegistryMessageType.REGISTRY_ACCEPTION
 					| this.rmt == RegistryMessageType.REGISTRY_REJECTION) {
 
-				dp = new DatagramPacket(b, b.length, Inet4Address.getByName(adress), this.answerPort);
-				System.out.println(this.getClass() + ": Created DatagramPaket " + this.getJSON().toString());
-			}
 
+				dp = new DatagramPacket(b, b.length, InetAddress.getByName(InetAddress.getLocalHost().getHostAddress()), this.getAnswerPort());
+				System.out.println(this.getClass() + ":ACCEPTION / REJECTION:  Created DatagramPaket "
+						+ this.getJSON().toString());
+			}
 		} catch (UnknownHostException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -134,8 +139,32 @@ public class RegistryProtocolPaket {
 		return port;
 	}
 
+	public int getRoboterID() {
+		return roboterID;
+	}
+
+	public Service getService() throws IllegalArgumentException {
+		String stub = name.split("Stub")[0];
+		String skeleton = name.split("Skeleton")[0];
+		if (Service.isService(stub)) {
+			return Service.parseService(stub);
+		} else if (Service.isService(skeleton)) {
+			return Service.parseService(skeleton);
+		} else {
+			throw new IllegalArgumentException("Not a service.");
+		}
+	}
+
 	public void setPort(int port) {
 		this.port = port;
+	}
+
+	public boolean isStub() {
+		return MiddlewareSide.isStub(name);
+	}
+
+	public boolean isSkeleton() {
+		return MiddlewareSide.isSkeleton(name);
 	}
 
 	public RegistryMessageType getRegistryMessageType() {
@@ -156,10 +185,6 @@ public class RegistryProtocolPaket {
 
 	public int getAnswerPort() {
 		return answerPort;
-	}
-
-	// TestMain
-	public static void main(String[] args) {
 	}
 
 }

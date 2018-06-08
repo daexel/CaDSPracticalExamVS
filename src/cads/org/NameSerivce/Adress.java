@@ -2,7 +2,14 @@ package cads.org.NameSerivce;
 
 import java.net.Inet4Address;
 import java.net.UnknownHostException;
-
+/**
+ * Address
+ * 
+ * Represents an addresses for a skeleton, a stub or a name service.
+ *
+ * @author BlackDynamite
+ *
+ */
 public class Adress {
 	private String adress;
 	private int port;

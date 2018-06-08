@@ -34,12 +34,17 @@ public class DEBUG {
 
 	// REGISTRY PROTOCOL DEBUG
 
-	public static final boolean REGISTRY_PROTOCOL_DEBUG = true;
+	public static final boolean REGISTRY_PROTOCOL_DEBUG = false;
 
 	// REGISTRY RECEIVER DEBUG
-	public static final boolean REGISTRY_RECEIVER_DEBUG = true;
-	
-	// REGISTRY MODUL DEBUG
-	public static final boolean REGISTY_MODUL_DEBUG = true;
+	public static final boolean REGISTRY_RECEIVER_DEBUG = false;
 
+	// REGISTRY MODUL DEBUG
+	public static final boolean REGISTY_MODUL_DEBUG = false;
+
+	// NAME RESOLUTION
+	public static final boolean NAME_RESOLUTION = false;
+
+	// PIPELINE DEBUG
+	public static final boolean PIPELINE_DEBUG = false;
 }

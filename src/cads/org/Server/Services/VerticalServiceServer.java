@@ -43,7 +43,7 @@ public class VerticalServiceServer extends Thread implements RoboterService {
 		currentOrder = null;
 		receiverObject = new Object();
 		incomingObject = new Object();
-		System.out.println("Horizontal Service initalized");
+		System.out.println("Vertical Service initalized");
 	}
 
 	@Override

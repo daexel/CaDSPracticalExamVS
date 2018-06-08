@@ -10,7 +10,7 @@ package cads.org.client;
  *
  */
 public enum Service {
-	VERTICAL, HORIZONTAL, GRABBER, ESTOP;
+	VERTICAL, HORIZONTAL, GRABBER, ESTOP, FEEDBACK;
 
 	/**
 	 * parseService
@@ -22,16 +22,38 @@ public enum Service {
 	 * @return ServiceObject
 	 */
 	public static Service parseService(String string) {
-		if (string.equals(Service.GRABBER.toString())) {
+		string = string.toLowerCase();
+		if (string.equals(Service.GRABBER.toString().toLowerCase())) {
 			return Service.GRABBER;
-		} else if (string.equals(Service.HORIZONTAL.toString())) {
+		} else if (string.equals(Service.HORIZONTAL.toString().toLowerCase())) {
 			return Service.HORIZONTAL;
-		} else if (string.equals(Service.VERTICAL.toString())) {
+		} else if (string.equals(Service.VERTICAL.toString().toLowerCase())) {
 			return Service.VERTICAL;
-		} else if (string.equals(Service.ESTOP.toString())) {
+		} else if (string.equals(Service.ESTOP.toString().toLowerCase())) {
 			return Service.ESTOP;
+		} else if (string.equals(Service.FEEDBACK.toString().toLowerCase())) {
+			return Service.FEEDBACK;
 		} else {
 			throw new IllegalArgumentException(string + " is not part of this enum.");
 		}
 	}
+
+	public static boolean isService(String string) {
+		string = string.toLowerCase();
+		if (string.equals(Service.GRABBER.toString().toLowerCase())) {
+			return true;
+		} else if (string.equals(Service.HORIZONTAL.toString().toLowerCase())) {
+			return true;
+		} else if (string.equals(Service.VERTICAL.toString().toLowerCase())) {
+			return true;
+		} else if (string.equals(Service.ESTOP.toString().toLowerCase())) {
+			return true;
+		} else if (string.equals(Service.FEEDBACK.toString().toLowerCase())) {
+			return true;
+		} else {
+			return false;
+		}
+
+	}
+	
 }

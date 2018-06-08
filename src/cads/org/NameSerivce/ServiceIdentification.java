@@ -11,9 +11,7 @@ public class ServiceIdentification {
 		this.service = service;
 	}
 
-	/**
-	 * mögliche Fehlerquelle
-	 */
+
 	@Override
 	public boolean equals(Object obj) {
 		ServiceIdentification o = (ServiceIdentification) obj;

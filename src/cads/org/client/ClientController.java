@@ -3,9 +3,13 @@
  */
 package cads.org.client;
 
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
+
 import org.json.simple.JSONObject;
 
-import cads.org.Middleware.Skeleton.FeedbackReceiver;
+import cads.org.Middleware.Skeleton.FeedbackSkeleton;
 import cads.org.Middleware.Skeleton.ResponsibiltySide;
 import cads.org.Middleware.Skeleton.RoboterFactory;
 
@@ -20,12 +24,27 @@ import cads.org.Middleware.Skeleton.RoboterFactory;
  */
 public class ClientController implements FeedbackListener, OrderOrbit {
 	private Surface surface;
+	private Map<Integer, RoboterFactory> roboMap;
+	private int actualRoboter;
 
-	private FeedbackReceiver fr;
+	private LinkedList<FeedbackSkeleton> frList;
 
-	public ClientController () {
-		fr = new FeedbackReceiver(1500, this);
-		surface = new Surface(this);
+	public ClientController() {
+		roboMap = new HashMap<Integer, RoboterFactory>();
+		frList = new LinkedList<FeedbackSkeleton>();
+	}
+
+	public void addRoboter(int roboterId) throws Exception {
+		while (true) {
+			try {
+				surface.addService("Roboter" + roboterId);
+				break;
+			} catch (NullPointerException e) {
+				continue;
+			}
+		}
+		roboMap.put(roboterId, new RoboterFactory(roboterId));
+		frList.add(new FeedbackSkeleton(this, roboterId));
 	}
 
 	public void addSurface(Surface surface) {
@@ -34,6 +53,7 @@ public class ClientController implements FeedbackListener, OrderOrbit {
 
 	@Override
 	public void updateFeedback(JSONObject obj) throws IllegalArgumentException {
+
 		if (cads.org.Debug.DEBUG.CLIENT_DEBUG) {
 			System.out.println(obj.toString());
 		}
@@ -69,7 +89,7 @@ public class ClientController implements FeedbackListener, OrderOrbit {
 
 	@Override
 	public void sendOrder(Order order) {
-		RoboterFactory.getService(order.getService(), ResponsibiltySide.CLIENT).move(order);
+		roboMap.get(order.getRoboterID()).getService(order.getService()).move(order);
 	}
 
 }

@@ -55,7 +55,6 @@ IIDLCaDSEV3RMIUltraSonic, ICaDSRMIConsumer,Runnable{
 	@Override
 	public void register(ICaDSRobotGUIUpdater observer) {
 		System.out.println("New Observer");
-        observer.addService("Service 1");
         observer.addService("Service 2");
         observer.setChoosenService("Service 2", -1, -1, false);
 				

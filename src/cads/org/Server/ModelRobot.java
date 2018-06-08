@@ -2,6 +2,9 @@
  * 
  */
 package cads.org.Server;
+
+import java.net.UnknownHostException;
+
 import org.cads.ev3.middleware.CaDSEV3RobotHAL;
 import org.cads.ev3.middleware.CaDSEV3RobotType;
 import org.cads.ev3.middleware.hal.ICaDSEV3RobotFeedBackListener;
@@ -18,11 +21,11 @@ import cads.org.Server.Services.HorizontalServiceServer;
 import cads.org.Server.Services.VerticalServiceServer;
 import cads.org.client.Service;
 
-
 /**
  * @author daexel
  * 
- * Repr�sentiert die Services in der Gesamtheit. Der Robot initalisiert alle Services.
+ *         Repr�sentiert die Services in der Gesamtheit. Der Robot initalisiert
+ *         alle Services.
  *
  */
 
@@ -36,9 +39,10 @@ public class ModelRobot extends Thread implements ICaDSEV3RobotStatusListener, I
 	private JSONObject statusHorizontal;
 	private JSONObject statusVertical;
 	private static CaDSEV3RobotHAL callerBot = null;
-	private FeedbackStub fs = new FeedbackStub();
-	
-	public ModelRobot() {
+	private FeedbackStub fs;
+	private int roboterID;
+
+	public ModelRobot(int roboterID) throws UnknownHostException, Exception {
 		statusGripper = new JSONObject();
 		statusHorizontal = new JSONObject();
 		statusVertical = new JSONObject();
@@ -56,9 +60,10 @@ public class ModelRobot extends Thread implements ICaDSEV3RobotStatusListener, I
 		grapperService.start();
 		estopService.start();
 		System.out.println("Robot initalized");
+		this.roboterID = roboterID;
+		fs = new FeedbackStub(roboterID);
 
 	}
-
 
 	public RoboterService getService(Service serviceType) {
 		if (serviceType == Service.GRABBER) {
@@ -69,12 +74,11 @@ public class ModelRobot extends Thread implements ICaDSEV3RobotStatusListener, I
 			return horizontalService;
 		} else if (serviceType == Service.ESTOP) {
 			return estopService;
-		} 
-			return null;
-		
+		}
+		return null;
+
 	}
 
-	
 	@Override
 	public synchronized void giveFeedbackByJSonTo(JSONObject feedback) {
 
@@ -84,20 +88,19 @@ public class ModelRobot extends Thread implements ICaDSEV3RobotStatusListener, I
 	public synchronized void onStatusMessage(JSONObject status) {
 		fs.send(status);
 		if (status.get("state") == "gripper") {
-						this.statusGripper = status;
-					}
-					if (status.get("state") == "horizontal") {
-						this.statusHorizontal = status;
-					}
-					if (status.get("state") == "vertical") {
-						this.statusVertical = status;
-						if(cads.org.Debug.DEBUG.MODEL_DEBUG) {
-							System.out.println(this.getClass()+ " VerticalValue: "+this.statusVertical.get("percent"));
-						}
-						
-					}
-	}
+			this.statusGripper = status;
+		}
+		if (status.get("state") == "horizontal") {
+			this.statusHorizontal = status;
+		}
+		if (status.get("state") == "vertical") {
+			this.statusVertical = status;
+			if (cads.org.Debug.DEBUG.MODEL_DEBUG) {
+				System.out.println(this.getClass() + " VerticalValue: " + this.statusVertical.get("percent"));
+			}
 
+		}
+	}
 
 	@Override
 	public long getHorizontalStatus() {
@@ -131,11 +134,11 @@ public class ModelRobot extends Thread implements ICaDSEV3RobotStatusListener, I
 		callerBot.teardown();
 
 	}
-	
+
 	public void stopRobot() {
-		//estopService.stopService();
+		// estopService.stopService();
 		grapperService.stopService();
-		//verticalService.stopService();
+		// verticalService.stopService();
 		horizontalService.stopService();
 		callerBot.doClose();
 	}
