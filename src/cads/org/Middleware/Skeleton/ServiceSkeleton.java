@@ -3,6 +3,7 @@ package cads.org.Middleware.Skeleton;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.net.SocketException;
 
 import cads.org.NameSerivce.RegisterModul;
@@ -14,12 +15,14 @@ public abstract class ServiceSkeleton {
 	private DatagramSocket sock;
 	private int p;
 	private Order o;
+	private int roboterID;
 
 	private ModelRobot robot;
 	protected ServerController srv;
 
-	public ServiceSkeleton(int port, ServerController srv) {
+	public ServiceSkeleton(int port, ServerController srv, int roboterID) {
 		this.srv = srv;
+		this.roboterID = roboterID;
 
 		String name = this.getClass().getSimpleName();
 
@@ -31,8 +34,9 @@ public abstract class ServiceSkeleton {
 			e.printStackTrace();
 		}
 		try {
-			RegisterModul.registerSkeleton(name, sock.getLocalAddress().getHostAddress().toString(),
-					9, p);
+			if (RegisterModul.registerSkeleton(name, InetAddress.getLocalHost().getHostAddress(), roboterID, p) == -1) {
+				System.out.println(this.getClass() + ": Registry of Skeleton denied");
+			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

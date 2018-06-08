@@ -6,8 +6,8 @@ import cads.org.client.Service;
 
 public class EstopSkeleton extends ServiceSkeleton {
 
-	public EstopSkeleton(int port, ServerController srv) {
-		super(port, srv);
+	public EstopSkeleton(int port, ServerController srv, int roboterID) {
+		super(port, srv, roboterID);
 
 	}
 

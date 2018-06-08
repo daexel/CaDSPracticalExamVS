@@ -7,8 +7,8 @@ import cads.org.client.Service;
 
 public class VerticalSkeleton extends ServiceSkeleton{
 
-	public VerticalSkeleton(int port, ServerController srv) {
-		super(port, srv);
+	public VerticalSkeleton(int port, ServerController srv, int roboterID) {
+		super(port, srv,roboterID);
 		// TODO Auto-generated constructor stub
 	}
 
