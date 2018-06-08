@@ -5,15 +5,24 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 
 import cads.org.Middleware.Skeleton.EstopSkeleton;
+import cads.org.Middleware.Skeleton.GrabberSkeleton;
+import cads.org.Middleware.Skeleton.HorizontalSkeleton;
+import cads.org.Middleware.Skeleton.ServiceSkeleton;
+import cads.org.Middleware.Skeleton.VerticalSkeleton;
+import cads.org.NameSerivce.Adress;
 import cads.org.NameSerivce.MiddlewareSide;
 import cads.org.NameSerivce.NameResolution;
+import cads.org.NameSerivce.Pipeline;
 import cads.org.NameSerivce.RegisterModul;
 import cads.org.NameSerivce.RegistryMessageType;
 import cads.org.NameSerivce.RegistryProtocolPaket;
 import cads.org.NameSerivce.RegistryReceiver;
 import cads.org.NameSerivce.ServiceIdentification;
 import cads.org.Server.ServerController;
+import cads.org.client.ClientController;
+import cads.org.client.Order;
 import cads.org.client.Service;
+import cads.org.client.Surface;
 
 public class Test {
 
@@ -23,7 +32,10 @@ public class Test {
 		boolean serviceTest = false;
 		boolean middlewareNameTest = false;
 		boolean nameResolutionTest = false;
-		boolean nameServiceTest = true;
+		boolean nameServiceTest = false;
+		boolean nameTest = false;
+		boolean abstractedClassTest = false;
+		boolean clientControllerTest = true;
 
 		/**************************************************************************************************/
 
@@ -85,18 +97,71 @@ public class Test {
 
 		// Service Test
 		if (nameServiceTest) {
-			NameResolution nr = new NameResolution();
-			RegistryReceiver r = new RegistryReceiver(nr);
-			int a = RegisterModul.registerStub("FeedbackStub", "localhost", 2);
+
+			RegistryReceiver r = new RegistryReceiver();
+			Adress a = RegisterModul.registerStub("FeedbackStub", "localhost", 2);
 			RegisterModul.registerSkeleton("FeedbackSkeleton", "localhost", 2, 1337);
 			System.out.println("huan");
 			DatagramSocket s = new DatagramSocket();
 			byte[] b = new byte[5];
 
-			DatagramPacket p = new DatagramPacket(b, b.length, InetAddress.getLoopbackAddress(), a);
+			DatagramPacket p = new DatagramPacket(b, b.length, InetAddress.getLoopbackAddress(), a.getPort());
 			s.send(p);
-			s.send(p);s.send(p);
-			s.send(p);s.send(p);s.send(p);s.send(p);s.send(p);
+			s.send(p);
+			s.send(p);
+			s.send(p);
+			s.send(p);
+			s.send(p);
+			s.send(p);
+			s.send(p);
+
+		}
+
+		/**************************************************************************************************/
+
+		// Name Test
+		if (nameTest) {
+			byte[] b = new byte[20];
+			DatagramPacket dp = new DatagramPacket(b, 0);
+			System.out.println(dp.getClass().getSimpleName());
+		}
+
+		/**************************************************************************************************/
+
+		// Abstracted Stub Class
+		if (a) abstractedClassTest{
+			RegistryReceiver r = new RegistryReceiver();
+			ServiceStub vs = new VerticalStub(0);
+			ServiceStub hS = new HorizontalStub(0);
+
+			ServerController srv = new ServerController(0);
+
+			ServiceSkeleton skeleton = new VerticalSkeleton(1337, srv, 0);
+			ServiceSkeleton hSkel = new HorizontalSkeleton(8989, srv, 0);
+			Thread.sleep(3000);
+			hS.move(new Order(0, 0, Service.HORIZONTAL, 20, false));
+			// vs.move(new Order(0, 0, Service.VERTICAL, 20, false));
+			// vs.move(new Order(0,0,Service.VERTICAL,45,false));
+
+		}
+
+		/**************************************************************************************************/
+
+		if (clientControllerTest) {
+			RegistryReceiver r = new RegistryReceiver();
+			ClientController c = new ClientController();
+			Surface s = new Surface(c);
+			c.addSurface(s);
+
+			int robo = 0;
+			c.addRoboter(0);
+			c.addRoboter(1);
+
+			ServerController svc = new ServerController(robo);
+			ServerController svc1 = new ServerController(1);
+			ServiceSkeleton vS = new VerticalSkeleton(1323, svc, robo);
+			ServiceSkeleton hS = new HorizontalSkeleton(4214, svc, robo);
+			ServiceSkeleton gS = new GrabberSkeleton(9999, svc, robo);
 
 		}
 	}
