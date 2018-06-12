@@ -1,4 +1,4 @@
-package cads.parser.generated;
+package cads.org.old_stuff;
 import static org.junit.Assert.fail;
 
 import java.util.concurrent.TimeUnit;

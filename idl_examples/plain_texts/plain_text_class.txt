@@ -1,0 +1,12 @@
+package %s;
+import %s;
+
+
+public class %s %s{
+
+%s  
+
+%s
+
+}
+ 

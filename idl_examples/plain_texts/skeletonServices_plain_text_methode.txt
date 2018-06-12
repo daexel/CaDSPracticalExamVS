@@ -1,0 +1,11 @@
+	%s
+	public %s %s(%s) {
+        super(port, srv,roboterID);        %s
+    }
+
+	%s
+	public %s %s(%s) {
+       super.getServerController().getRobot().getService(Service.%s).move(order);        %s
+    }
+
+

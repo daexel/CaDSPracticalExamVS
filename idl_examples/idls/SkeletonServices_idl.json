@@ -1,0 +1,38 @@
+{
+    "ServiceName": "ExplodeSkeleton",
+    "Service": "EXPLODE",
+	"Extention": "ServiceSkeleton",
+	"Imports": [
+		{"Path": "cads.org.Server.ServerController"},
+		{"Path": "cads.org.client.Order"},
+		{"Path": "cads.org.client.Service"},
+		{"Path": "cads.org.Middleware.Skeleton.ServiceSkeleton"}],
+    "Functions": [{
+		"annotation" : ""
+        "name": "ExplodeSkeleton",
+        "parameters": [{
+            "position": 1,
+            "type": "int",
+            "name": "port"
+        }, {
+            "position": 2,
+            "type": "ServerController",
+            "name": "srv"
+        },{
+            "position": 3,
+            "type": "int",
+            "name": "roboterID"
+        }],
+        "returnType": ""
+    }, {
+		"annotation" : "@Override"
+        "name": "useService",
+        "parameters": [{
+            "position": 1,
+            "type": "Order",
+            "name": "order"
+        }],
+        "returnType": "void"
+    }]
+}
+

@@ -1,0 +1,55 @@
+{
+    "ServiceName": "RoboterFactory",
+    "Function": "RoboterFactory",
+	"Extention": "",
+	"Imports": [
+		{"Path": "java.util.LinkedList"},
+		{"Path": "cads.org.Middleware.Stub.EstopStub"},
+		{"Path": "cads.org.Middleware.Stub.GrabberStub"},
+		{"Path": "cads.org.Middleware.Stub.HorizontalStub"},
+		{"Path": "cads.org.Middleware.Stub.VerticalStub"},
+		{"Path": "cads.org.client.Service"}],
+	"Variables": [{
+		"position": 1,
+		"type": "static LinkedList<Integer>",
+		"name": "robotInUse = new LinkedList<Integer>()"},
+		{
+		"position": 2,
+		"type": "GrapperStub",
+		"name": "gs"},
+		{
+		"position": 3,
+		"type": "VerticalStub",
+		"name": "vs"
+		},
+		{
+		"position": 4,
+		"type": "HorizontalStub",
+		"name": "hs"
+		},
+		{
+		"position": 5,
+		"type": "EstopStub",
+		"name": "es"
+		}],
+    "Functions": [{
+		"annotation" : ""
+        "name": "RoboterFactory",
+        "parameters": [{
+            "position": 1,
+            "type": "int",
+            "name": "roboterID"
+        }],
+		"throws": "Exception"
+        "returnType": ""
+    }, {
+		"annotation" : ""
+        "name": "getService",
+        "parameters": [{
+            "position": 1,
+            "type": "Service",
+            "name": "serviceType"
+        }],
+        "returnType": "RoboterService"
+    }]
+}
