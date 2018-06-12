@@ -84,7 +84,7 @@ public static void main(String[] args) throws FileNotFoundException, IOException
         }
     
         
-        
+        //Fill the Methodes
         for (Object obj : methodes) {
             JSONObject jsonObj = (JSONObject) obj;
             String annotation = (String) jsonObj.get("annotation");
@@ -113,7 +113,7 @@ public static void main(String[] args) throws FileNotFoundException, IOException
 
         // Read Plain Text Class
         System.out.println();
-        fileName = "idl_examples/plain_texts/robotfactory_plain_text_class.txt";
+        fileName = "idl_examples/plain_texts/plain_text_class.txt";
         System.out.println("::: read plaintext class from file: " + fileName + " :::");
 
         String plainTextClass = readEntirefile(fileName);
@@ -157,74 +157,74 @@ public static void main(String[] args) throws FileNotFoundException, IOException
         	importBuffer.append(importPath+";");
         }
         int methodeCounter=0;
-        //for (String methodeName : methodeNames) {
-        	String methodeNameA = methodeNames.get(methodeCounter);
-        	String annotationA = methodeAnnotationMap.get(methodeNameA);
-            parametersBufferA = new StringBuffer();
-            Map<Integer, Map<String, String>> parameterPositionMap = methodeParameterMap.get(methodeNameA);
-            int i = 1;
-            Map<String, String> parameterA = parameterPositionMap.get(new Integer(i++));
 
-            while (parameter != null) {
-                if (i > 2) {
-                    parametersBufferA.append(", ");
-                }
+    	String methodeNameA = methodeNames.get(methodeCounter);
+    	String annotationA = methodeAnnotationMap.get(methodeNameA);
+        parametersBufferA = new StringBuffer();
+        Map<Integer, Map<String, String>> parameterPositionMap = methodeParameterMap.get(methodeNameA);
+        int i = 1;
+        Map<String, String> parameterA = parameterPositionMap.get(new Integer(i++));
 
-                parametersBufferA.append(parameterA.get("type"));
-                parametersBufferA.append(" ");
-                parametersBufferA.append(parameterA.get("name"));
-
-                parameterA = parameterPositionMap.get(new Integer(i++));
+        while (parameterA != null) {
+            if (i > 2) {
+                parametersBufferA.append(", ");
             }
-            String returnTypeA = methodeReturnMap.get(methodeNameA);
-            String returnStatementA = "";
+
+            parametersBufferA.append(parameterA.get("type"));
+            parametersBufferA.append(" ");
+            parametersBufferA.append(parameterA.get("name"));
+
+            parameterA = parameterPositionMap.get(new Integer(i++));
+        }
+        String returnTypeA = methodeReturnMap.get(methodeNameA);
+        String returnStatementA = "";
+        
+        // Here every supported return type has to be listed
+        switch (returnTypeA) {
+        case "int":
+            returnStatementA = "return 0;";
+            break;
+        case "long":
+            returnStatementA = "return 0L;";
+            break;
+        case "String":
+            returnStatementA = "return null;";
+            break;
+        }
+       methodeCounter++;
+       String methodeNameB = methodeNames.get(methodeCounter);
+       String annotationB = methodeAnnotationMap.get(methodeNameB);
+        parametersBufferB = new StringBuffer();
+        Map<Integer, Map<String, String>> parameterPositionMapB = methodeParameterMap.get(methodeNameB);
+        int b = 1;
+        Map<String, String> parameterB = parameterPositionMapB.get(new Integer(b++));
+
+        while (parameterB != null) {
+            if (b > 2) {
+                parametersBufferB.append(", ");
+            }
+
+            parametersBufferB.append(parameterB.get("type"));
+            parametersBufferB.append(" ");
+            parametersBufferB.append(parameterB.get("name"));
             
-            // Here every supported return type has to be listed
-            switch (returnTypeA) {
-            case "int":
-                returnStatementA = "return 0;";
-                break;
-            case "long":
-                returnStatementA = "return 0L;";
-                break;
-            case "String":
-                returnStatementA = "return null;";
-                break;
-            }
-           methodeCounter++;
-           String methodeNameB = methodeNames.get(methodeCounter);
-           String annotationB = methodeAnnotationMap.get(methodeNameB);
-            parametersBufferB = new StringBuffer();
-            Map<Integer, Map<String, String>> parameterPositionMapB = methodeParameterMap.get(methodeNameB);
-            int b = 1;
-            Map<String, String> parameterB = parameterPositionMapB.get(new Integer(b++));
-
-            while (parameterB != null) {
-                if (b > 2) {
-                    parametersBufferB.append(", ");
-                }
-
-                parametersBufferB.append(parameterB.get("type"));
-                parametersBufferB.append(" ");
-                parametersBufferB.append(parameterB.get("name"));
-                
-                parameterB = parameterPositionMapB.get(new Integer(i++));
-            }
-            String returnTypeB = methodeReturnMap.get(methodeNameB);
-            String returnStatementB = "";
-            
-            // Here every supported return type has to be listed
-            switch (returnTypeB) {
-            case "int":
-                returnStatementB = "return 0;";
-                break;
-            case "long":
-                returnStatementB = "return 0L;";
-                break;
-            case "String":
-                returnStatementB = "return null;";
-                break;
-            }
+            parameterB = parameterPositionMapB.get(new Integer(i++));
+        }
+        String returnTypeB = methodeReturnMap.get(methodeNameB);
+        String returnStatementB = "";
+        
+        // Here every supported return type has to be listed
+        switch (returnTypeB) {
+        case "int":
+            returnStatementB = "return 0;";
+            break;
+        case "long":
+            returnStatementB = "return 0L;";
+            break;
+        case "String":
+            returnStatementB = "return null;";
+            break;
+        }
         //}
         methodesBuffer.append(String.format(plainTextMethode,annotationA, returnTypeA, methodeNameA, parametersBufferA.toString(), returnStatementA,
         		annotationB,returnTypeB, methodeNameB, parametersBufferB.toString(),returnStatementB));
