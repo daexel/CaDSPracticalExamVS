@@ -1,0 +1,18 @@
+{
+    "ServiceName": "HorizontalStub",
+    "Service": "HORIZONTAL",
+	"Extention": "ServiceStub",
+	"Imports": [
+		{"Path": "cads.org.Middleware.Stub.ServiceStub"}],
+    "Functions": [{
+		"annotation" : "",
+        "name": "HorizontalStub",
+        "parameters": [{
+            "position": 1,
+            "type": "int",
+            "name": "roboterID"
+        }],
+        "returnType": ""
+    }]
+}
+

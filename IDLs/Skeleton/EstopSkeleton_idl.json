@@ -1,6 +1,6 @@
 {
-    "ServiceName": "ExplodeSkeleton",
-    "Service": "EXPLODE",
+    "ServiceName": "EstopSkeleton",
+    "Service": "ESTOP",
 	"Extention": "ServiceSkeleton",
 	"Imports": [
 		{"Path": "cads.org.Server.ServerController"},
@@ -8,8 +8,8 @@
 		{"Path": "cads.org.client.Service"},
 		{"Path": "cads.org.Middleware.Skeleton.ServiceSkeleton"}],
     "Functions": [{
-		"annotation" : ""
-        "name": "ExplodeSkeleton",
+		"annotation" : "",
+        "name": "EstopSkeleton",
         "parameters": [{
             "position": 1,
             "type": "int",
@@ -25,7 +25,7 @@
         }],
         "returnType": ""
     }, {
-		"annotation" : "@Override"
+		"annotation" : "@Override",
         "name": "useService",
         "parameters": [{
             "position": 1,

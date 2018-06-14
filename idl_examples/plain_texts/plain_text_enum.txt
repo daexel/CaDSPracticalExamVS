@@ -1,0 +1,9 @@
+package %s;
+
+
+public enum Service {
+	
+
+%s  
+}
+ 

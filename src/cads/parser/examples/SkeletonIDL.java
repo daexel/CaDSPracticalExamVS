@@ -34,9 +34,13 @@ public class SkeletonIDL {
 		 System.out.println("#############################");
 	        System.out.println("Start - IDL_Parser_SkeletonServices.");
 	        System.out.println();
-
+	        List<String> jsonFiles = new ArrayList<>();
+	        jsonFiles.add("idl_examples/idls/EstopSkeleton_idl.json");
+	        jsonFiles.add("idl_examples/idls/GrabberSkeleton_idl.json");
+	        jsonFiles.add("idl_examples/idls/HorizontalSkeleton_idl.json");
+	        jsonFiles.add("idl_examples/idls/VerticalSkeleton_idl.json");
+	        for (String fileName : jsonFiles) {
 	        // Read IDL Example
-	        String fileName = "idl_examples/idls/SkeletonServices_idl.json";
 	        System.out.println("::: read IDL from file: " + fileName + " :::");
 	        String jsonText = readEntirefile(fileName);
 	        System.out.println(jsonText);
@@ -207,6 +211,7 @@ public class SkeletonIDL {
 	        System.out.println("End - IDL_Parser_SkeletonIDL.");
 	        System.out.println("###########################");
 	    }
+	 }
 
 	    private static void writeToFile(String objectName, String classString) throws IOException {
 	        String fileName;

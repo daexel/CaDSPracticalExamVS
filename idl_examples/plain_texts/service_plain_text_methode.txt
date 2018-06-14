@@ -1,0 +1,17 @@
+	%s
+	public static %s %s(%s) {
+		string = string.toLowerCase();
+		%s
+		
+	%s
+	}
+	
+	%s
+	public static %s %s(%s) {
+		string = string.toLowerCase();
+		%s
+		else {
+			%s
+		}
+
+	}

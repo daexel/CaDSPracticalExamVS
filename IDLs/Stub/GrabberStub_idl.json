@@ -1,0 +1,18 @@
+{
+    "ServiceName": "GrabberStub",
+    "Service": "GRABBER",
+	"Extention": "ServiceStub",
+	"Imports": [
+		{"Path": "cads.org.Middleware.Stub.ServiceStub"}],
+    "Functions": [{
+		"annotation" : "",
+        "name": "GrabberStub",
+        "parameters": [{
+            "position": 1,
+            "type": "int",
+            "name": "roboterID"
+        }],
+        "returnType": ""
+    }]
+}
+

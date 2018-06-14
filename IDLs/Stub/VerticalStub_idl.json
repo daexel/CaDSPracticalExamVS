@@ -1,0 +1,18 @@
+{
+    "ServiceName": "VerticalStub",
+    "Service": "VERTICAL",
+	"Extention": "ServiceStub",
+	"Imports": [
+		{"Path": "cads.org.Middleware.Stub.ServiceStub"}],
+    "Functions": [{
+		"annotation" : "",
+        "name": "VerticalStub",
+        "parameters": [{
+            "position": 1,
+            "type": "int",
+            "name": "roboterID"
+        }],
+        "returnType": ""
+    }]
+}
+

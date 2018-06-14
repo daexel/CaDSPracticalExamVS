@@ -1,0 +1,18 @@
+{
+    "ServiceName": "EstopStub",
+    "Service": "ESTOP",
+	"Extention": "ServiceStub",
+	"Imports": [
+		{"Path": "cads.org.Middleware.Stub.ServiceStub"}],
+    "Functions": [{
+		"annotation" : "",
+        "name": "EstopStub",
+        "parameters": [{
+            "position": 1,
+            "type": "int",
+            "name": "roboterID"
+        }],
+        "returnType": ""
+    }]
+}
+

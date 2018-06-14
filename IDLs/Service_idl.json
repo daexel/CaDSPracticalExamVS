@@ -1,0 +1,36 @@
+{
+    "ServiceName": "Service",
+	"Extention": "",
+	"Imports": "",
+	"Variables": "",
+	"Enums":[
+		{"Enum": "GRABBER"},
+		{"Enum": "HORIZONTAL"},
+		{"Enum": "VERTICAL"},
+		{"Enum": "ESTOP"},
+		{"Enum": "FEEDBACK"},
+		{"Enum": "EXPLODE"}],
+    "Functions": [{
+		"annotation" : "",
+		"keyword" : "static",
+        "name": "parseService",
+        "parameters": [{
+            "position": 1,
+            "type": "String",
+            "name": "string"
+        }],
+		"throws": "",
+        "returnType": "Service"
+    }, {
+		"annotation" : "",
+		"keyword" : "static",
+        "name": "isService",
+        "parameters": [{
+            "position": 1,
+            "type": "String",
+            "name": "sring"
+        }],
+		"throws": "",
+        "returnType": "Boolean"
+    }]
+}
