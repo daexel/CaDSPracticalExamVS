@@ -35,10 +35,10 @@ public class SkeletonIDL {
 	        System.out.println("Start - IDL_Parser_SkeletonServices.");
 	        System.out.println();
 	        List<String> jsonFiles = new ArrayList<>();
-	        jsonFiles.add("idl_examples/idls/EstopSkeleton_idl.json");
-	        jsonFiles.add("idl_examples/idls/GrabberSkeleton_idl.json");
-	        jsonFiles.add("idl_examples/idls/HorizontalSkeleton_idl.json");
-	        jsonFiles.add("idl_examples/idls/VerticalSkeleton_idl.json");
+	        jsonFiles.add("IDLs/Skeleton/EstopSkeleton_idl.json");
+	        jsonFiles.add("IDLs/Skeleton/GrabberSkeleton_idl.json");
+	        jsonFiles.add("IDLs/Skeleton/HorizontalSkeleton_idl.json");
+	        jsonFiles.add("IDLs/Skeleton/VerticalSkeleton_idl.json");
 	        for (String fileName : jsonFiles) {
 	        // Read IDL Example
 	        System.out.println("::: read IDL from file: " + fileName + " :::");
