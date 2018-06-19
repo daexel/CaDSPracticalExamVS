@@ -9,7 +9,6 @@ package soundcapture;
  */
 import java.io.IOException;
 import javax.sound.sampled.*;
-
 import java.io.File;
 
 public class Manager
@@ -61,4 +60,6 @@ public class Manager
                                frameRate,
                                bigEndian);
     }
+
+
 }
